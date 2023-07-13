@@ -1,4 +1,4 @@
-import { createPublicClient, http } from "viem";
+import { createPublicClient, http, PublicClient } from "viem";
 import {
   mainnet,
   goerli,
@@ -174,7 +174,7 @@ const chainConfigs = {
   },
 };
 
-export function getClient(chain) {
+export function getClient(chain: string) {
   let publicClient;
   try {
     publicClient = createPublicClient({

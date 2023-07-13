@@ -1,7 +1,11 @@
 import { isAddress } from "viem";
 import { SUPPORTED_CHAINS, STATUS_CODE } from "./constants";
 
-export function validateContractAddress(contractAddress: string) {
+export function validateContractAddress(contractAddress: string): {
+  status?: number;
+  error?: { errorCode: string; message: string };
+  validatedContractAddress?: string;
+} {
   if (!contractAddress || !isAddress(contractAddress)) {
     return {
       status: STATUS_CODE.BAD_REQUEST,

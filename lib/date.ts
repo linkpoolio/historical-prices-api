@@ -1,1 +1,1 @@
-export const formatDate = (date) => new Date(Number(date) * 1000);
+export const formatDate = (date: Date) => new Date(Number(date) * 1000);
