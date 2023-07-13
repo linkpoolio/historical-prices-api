@@ -5,6 +5,7 @@ import { validateInput } from "../../lib/inputValidations";
 import { STATUS_CODE } from "../../lib/constants";
 import { formatDate } from "../../lib/date";
 import { getStartPhaseData } from "../../lib/getStartPhaseData";
+import { binarySearchRoundId } from "../../lib/binarySearch";
 import { start } from "repl";
 
 export default async function handler(req, res) {
@@ -143,7 +144,7 @@ export default async function handler(req, res) {
           phaseId: currentPhaseId.toString(),
           roundId: currentRoundId.toString(),
           answer: roundData[1].toString(),
-          timestamp: formatDate(roundData[3].toString()),
+          timestamp: new Date(Number(roundData[3].toString()) * 1000),
         };
 
         console.log(responseRoundData);
@@ -151,22 +152,22 @@ export default async function handler(req, res) {
         // Save the round data
         // if the round timestamp of the new round is equal or less than the last roundsData timestamp, skip it
 
-        if (roundsData.length > 0) {
-          const lastRoundTimestamp = BigInt(
-            Math.floor(
-              roundsData[roundsData.length - 1].timestamp.getTime() / 1000
-            )
-          );
-          if (roundTimestamp <= lastRoundTimestamp) {
-            currentRoundId++;
-            continue;
-          }
-        }
+        // if (roundsData.length > 0) {
+        //   const lastRoundTimestamp = BigInt(
+        //     Math.floor(
+        //       roundsData[roundsData.length - 1].timestamp.getTime() / 1000
+        //     )
+        //   );
+        //   if (roundTimestamp <= lastRoundTimestamp) {
+        //     currentRoundId++;
+        //     continue;
+        //   }
+        // }
 
         roundsData.push(responseRoundData);
 
         // Update the current round Id
-        currentRoundId++;
+        // currentRoundId++;
         // If the current round Id exceeds the latest round Id of the current phase,
         // switch to the next phase and reset the round Id
 
@@ -175,21 +176,46 @@ export default async function handler(req, res) {
           currentRoundId ===
           phaseAggregatorContracts[currentPhaseId - 1].latestRoundId
         ) {
-          currentPhaseId++;
-          currentRoundId = 1;
-        }
+          // Find the round id of the next phase by using the binary search algorithm
 
-        if (
-          currentRoundId >
-          phaseAggregatorContracts[currentPhaseId - 1].latestRoundId
-        ) {
-          currentPhaseId++;
-          currentRoundId = 1;
-          // Break the loop if there's no next phase
-          if (currentPhaseId > phaseAggregatorContracts.length) {
-            break;
+          console.log({
+            1: phaseAggregatorContracts[currentPhaseId].address,
+            2: roundData[3],
+            3: phaseAggregatorContracts[currentPhaseId].latestRoundId,
+          });
+
+          let error = true;
+          let roundId;
+
+          while (error) {
+            ({ roundId, error } = await binarySearchRoundId(
+              publicClient,
+              phaseAggregatorContracts[currentPhaseId].address,
+              roundData[3],
+              phaseAggregatorContracts[currentPhaseId].latestRoundId,
+              10000
+            ));
+
+            // If an error still exists, print the error message and increment the currentPhaseId.
+            if (error) {
+              console.log("Error occurred in phaseId: ", currentPhaseId);
+              currentPhaseId++;
+
+              // Check if we've gone through all the contracts.
+              if (currentPhaseId >= phaseAggregatorContracts.length) {
+                console.error(
+                  "All contracts have been searched, no valid roundId found."
+                );
+                break;
+              }
+            }
           }
+          console.log(error);
+          console.log(roundId);
+          currentRoundId = roundId;
+          currentPhaseId++;
         }
+        currentRoundId++;
       }
 
       // Return the rounds data

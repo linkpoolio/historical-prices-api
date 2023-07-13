@@ -13,7 +13,7 @@ export const binarySearchRoundId = async (
   } as const;
 
   let low = BigInt(0);
-  let high = BigInt(latestRoundId);
+  let high = BigInt(Number(latestRoundId));
 
   while (low <= high) {
     const mid = low + (high - low) / BigInt(2);
@@ -25,6 +25,7 @@ export const binarySearchRoundId = async (
         functionName: "getTimestamp",
         args: [mid.toString()],
       });
+      console.log("BINARY", timestamp);
     } catch (error) {
       low = mid + BigInt(1);
       continue;
