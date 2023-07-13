@@ -15,7 +15,7 @@ export async function getStartPhaseData(
       phaseAggregatorContract.address,
       startTimestampBigInt,
       phaseAggregatorContract.latestRoundId,
-      1000 // In seconds: 1000 seconds = 16 minutes
+      100000
     );
 
     if (error) {

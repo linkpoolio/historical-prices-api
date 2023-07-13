@@ -5,6 +5,7 @@ import { validateInput } from "../../lib/inputValidations";
 import { STATUS_CODE } from "../../lib/constants";
 import { formatDate } from "../../lib/date";
 import { getStartPhaseData } from "../../lib/getStartPhaseData";
+import { start } from "repl";
 
 export default async function handler(req, res) {
   const { contractAddress, startTimestamp, endTimestamp, chain } = req.query;
@@ -114,6 +115,8 @@ export default async function handler(req, res) {
     startPhaseId = phaseId;
     startRoundId = roundId;
 
+    console.log(startPhaseData);
+
     // Now that the start phase data is found, we can start fetching the rounds up until the end timestamp. We can't use multicall.
 
     let currentPhaseId = startPhaseId;
@@ -122,7 +125,8 @@ export default async function handler(req, res) {
 
     try {
       while (true) {
-        const roundData = await publicClient.readContract({
+        let roundData;
+        roundData = await publicClient.readContract({
           address: phaseAggregatorContracts[currentPhaseId - 1].address,
           abi: AccessControlledOffchainAggregator,
           functionName: "getRoundData",
@@ -141,6 +145,8 @@ export default async function handler(req, res) {
           answer: roundData[1].toString(),
           timestamp: formatDate(roundData[3].toString()),
         };
+
+        console.log(responseRoundData);
 
         // Save the round data
         // if the round timestamp of the new round is equal or less than the last roundsData timestamp, skip it
@@ -163,6 +169,16 @@ export default async function handler(req, res) {
         currentRoundId++;
         // If the current round Id exceeds the latest round Id of the current phase,
         // switch to the next phase and reset the round Id
+
+        // If the round id equals the latest round id of the current phase, move to the next phase and reset the round id
+        if (
+          currentRoundId ===
+          phaseAggregatorContracts[currentPhaseId - 1].latestRoundId
+        ) {
+          currentPhaseId++;
+          currentRoundId = 1;
+        }
+
         if (
           currentRoundId >
           phaseAggregatorContracts[currentPhaseId - 1].latestRoundId
