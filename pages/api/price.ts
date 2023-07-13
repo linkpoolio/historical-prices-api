@@ -7,6 +7,7 @@ import {
 } from "../../lib/inputValidations";
 import { STATUS_CODE, CHUNK_SIZE } from "../../lib/constants";
 import { binarySearchRoundId } from "../../lib/binarySearch";
+import { formatDate } from "../../lib/date";
 
 export default async function handler(req, res) {
   const { contractAddress, startTimestamp, endTimestamp, chain } = req.query;
@@ -72,7 +73,7 @@ export default async function handler(req, res) {
     });
   }
 
-  if (startTimestampBigInt.toString() == endTimestampBigInt.toString()) {
+  if (startTimestamp.toString() == endTimestamp.toString()) {
     let round;
     try {
       round = await binarySearchRoundId(
@@ -85,8 +86,8 @@ export default async function handler(req, res) {
         description,
         answer: round.roundData[0].toString(),
         decimals,
-        startedAt: round.roundData[3].toString(),
-        updatedAt: round.roundData[4].toString(),
+        startedAt: formatDate(round.roundData[2]),
+        updatedAt: formatDate(round.roundData[3]),
       });
     } catch (error) {
       return res.status(STATUS_CODE.INTERNAL_ERROR).json({
@@ -166,8 +167,8 @@ export default async function handler(req, res) {
             description: description,
             answer: roundPrice.toString(),
             decimals: decimals.toString(),
-            startedAt: roundData[2].toString(),
-            updatedAt: roundTimestamp.toString(),
+            startedAt: formatDate(roundData[2]),
+            updatedAt: formatDate(roundTimestamp),
           };
         }),
     ];
