@@ -51,3 +51,37 @@ export function validateTimestamps(startTimestamp, endTimestamp) {
     validatedEndTimestamp: endTimestamp,
   };
 }
+
+export const validateInput = (
+  contractAddress,
+  chain,
+  startTimestamp,
+  endTimestamp
+) => {
+  let validationResult;
+
+  validationResult = validateContractAddress(contractAddress);
+  if (validationResult.error) {
+    return { status: validationResult.status, error: validationResult.error };
+  }
+  const validatedContractAddress = validationResult.validatedContractAddress;
+
+  validationResult = validateChain(chain);
+  if (validationResult.error) {
+    return { status: validationResult.status, error: validationResult.error };
+  }
+  const validatedChain = validationResult.validatedChain;
+
+  validationResult = validateTimestamps(startTimestamp, endTimestamp);
+  if (validationResult.error) {
+    return { status: validationResult.status, error: validationResult.error };
+  }
+  const { validatedStartTimestamp, validatedEndTimestamp } = validationResult;
+
+  return {
+    validatedContractAddress,
+    validatedChain,
+    validatedStartTimestamp,
+    validatedEndTimestamp,
+  };
+};
