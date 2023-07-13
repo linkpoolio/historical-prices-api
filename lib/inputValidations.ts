@@ -1,7 +1,7 @@
 import { isAddress } from "viem";
 import { SUPPORTED_CHAINS, STATUS_CODE } from "./constants";
 
-export function validateContractAddress(contractAddress) {
+export function validateContractAddress(contractAddress: string) {
   if (!contractAddress || !isAddress(contractAddress)) {
     return {
       status: STATUS_CODE.BAD_REQUEST,
@@ -15,7 +15,7 @@ export function validateContractAddress(contractAddress) {
   return { validatedContractAddress: contractAddress };
 }
 
-export function validateChain(chain) {
+export function validateChain(chain: string) {
   if (!chain || !SUPPORTED_CHAINS.includes(chain)) {
     return {
       status: STATUS_CODE.BAD_REQUEST,
@@ -31,7 +31,10 @@ export function validateChain(chain) {
   return { validatedChain: chain };
 }
 
-export function validateTimestamps(startTimestamp, endTimestamp) {
+export function validateTimestamps(
+  startTimestamp: number,
+  endTimestamp: number
+) {
   const currentTimestamp = Math.floor(Date.now() / 1000);
   if (
     (startTimestamp && startTimestamp > currentTimestamp) ||

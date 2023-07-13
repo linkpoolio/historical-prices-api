@@ -1,3 +1,4 @@
+import type { NextApiRequest, NextApiResponse } from "next";
 import EACAggregatorProxy from "../../abi/EACAggregatorProxy.json";
 import { getClient } from "../../lib/client";
 import {
@@ -9,24 +10,30 @@ import { STATUS_CODE, CHUNK_SIZE } from "../../lib/constants";
 import { binarySearchRoundId } from "../../lib/binarySearch";
 import { formatDate } from "../../lib/date";
 
-export default async function handler(req, res) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const { contractAddress, startTimestamp, endTimestamp, chain } = req.query;
 
   let validationResult;
 
-  validationResult = validateContractAddress(contractAddress);
+  validationResult = validateContractAddress(contractAddress as string);
   if (validationResult.error) {
     return res.status(validationResult.status).json(validationResult.error);
   }
   const { validatedContractAddress } = validationResult;
 
-  validationResult = validateChain(chain);
+  validationResult = validateChain(chain as string);
   if (validationResult.error) {
     return res.status(validationResult.status).json(validationResult.error);
   }
   const { validatedChain } = validationResult;
 
-  validationResult = validateTimestamps(startTimestamp, endTimestamp);
+  validationResult = validateTimestamps(
+    parseInt(startTimestamp as string, 10),
+    parseInt(endTimestamp as string, 10)
+  );
   if (validationResult.error) {
     return res.status(validationResult.status).json(validationResult.error);
   }
