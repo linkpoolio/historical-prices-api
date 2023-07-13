@@ -72,16 +72,44 @@ export default async function handler(req, res) {
     });
   }
 
-  let startRoundId = await binarySearchRoundId(
+  if (startTimestampBigInt.toString() == endTimestampBigInt.toString()) {
+    let round;
+    try {
+      round = await binarySearchRoundId(
+        publicClient,
+        validatedContractAddress,
+        startTimestampBigInt
+      );
+      return res.status(STATUS_CODE.OK).json({
+        roundId: round.roundId.toString(),
+        description,
+        answer: round.roundData[0].toString(),
+        decimals,
+        startedAt: round.roundData[3].toString(),
+        updatedAt: round.roundData[4].toString(),
+      });
+    } catch (error) {
+      return res.status(STATUS_CODE.INTERNAL_ERROR).json({
+        errorCode: "FAILED_TO_FETCH_ROUND_ID",
+        message: `Failed to get round id for timestamp ${startTimestampBigInt} from contract ${validatedContractAddress}: ${error.message}`,
+      });
+    }
+  }
+
+  let startRound = await binarySearchRoundId(
     publicClient,
     validatedContractAddress,
     startTimestampBigInt
   );
-  let endRoundId = await binarySearchRoundId(
+
+  let endRound = await binarySearchRoundId(
     publicClient,
     validatedContractAddress,
     endTimestampBigInt
   );
+
+  let startRoundId = startRound.roundId;
+  let endRoundId = endRound.roundId;
 
   if (startRoundId > endRoundId) {
     [startRoundId, endRoundId] = [endRoundId, startRoundId];

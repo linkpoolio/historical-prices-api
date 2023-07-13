@@ -24,6 +24,7 @@ export const binarySearchRoundId = async (
   let low = BigInt(0);
   let high = BigInt(latestRoundData[0]);
   let closest = high;
+  let closestRoundData = null;
 
   while (low <= high) {
     const mid = low + (high - low) / BigInt(2);
@@ -44,7 +45,7 @@ export const binarySearchRoundId = async (
       const midTimestamp = BigInt(roundData[3]);
 
       if (midTimestamp === targetTimestamp) {
-        return mid;
+        return { roundId: mid, roundData };
       }
 
       if (midTimestamp < targetTimestamp) {
@@ -58,11 +59,12 @@ export const binarySearchRoundId = async (
         Math.abs(Number(closest) - Number(targetTimestamp))
       ) {
         closest = mid;
+        closestRoundData = roundData;
       }
     } else {
       low = mid + BigInt(1);
     }
   }
 
-  return closest;
+  return { roundId: closest, roundData: closestRoundData };
 };
