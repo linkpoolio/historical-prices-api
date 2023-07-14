@@ -115,16 +115,37 @@ function Dashboard() {
     setResponseData(response);
   };
 
-  const handleSingleDateSelect = (date) => {
-    setSingleDate(date);
-  };
+  const downloadCSV = () => {
+    if (
+      !responseData.data ||
+      !responseData.data.rounds ||
+      responseData.data.rounds.length === 0
+    ) {
+      console.log("No data to download");
+      return;
+    }
 
-  const handleStartDateSelect = (date) => {
-    setStartDate(date);
-  };
+    let csvData = responseData.data.rounds.map((round) => {
+      return Object.keys(round)
+        .map((key) => {
+          return `"${round[key]}"`;
+        })
+        .join(",");
+    });
 
-  const handleEndDateSelect = (date) => {
-    setEndDate(date);
+    const keys = Object.keys(responseData.data.rounds[0]);
+
+    csvData.unshift(keys.join(",")); // Add the headers to the first line
+
+    const csvString = csvData.join("\r\n"); // Join all lines with newline
+
+    const link = document.createElement("a");
+    link.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csvString);
+    link.target = "_blank";
+    link.download = "data.csv";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const backgroundColor = useColorModeValue("gray.100", "gray.100");
@@ -283,6 +304,16 @@ function Dashboard() {
         <Box overflowY={"auto"} maxHeight={"50vh"}>
           {responseData && <pre>{JSON.stringify(responseData, null, 2)}</pre>}
         </Box>
+        {responseData && (
+          <Button
+            onClick={downloadCSV}
+            bgColor={{
+              base: "brand.primary",
+            }}
+          >
+            Export to CSV
+          </Button>
+        )}
       </Box>
     </Flex>
   );
