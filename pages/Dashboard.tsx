@@ -91,6 +91,7 @@ function Dashboard() {
     if (!validateInputs()) {
       return;
     }
+    setResponseData(null);
     setIsLoading(true);
 
     try {
@@ -116,7 +117,7 @@ function Dashboard() {
         });
       }
 
-      setResponseData(response);
+      setResponseData(response.data);
       setError(null); // clear any previous error
     } catch (err) {
       setError(err); // store the error message
@@ -127,16 +128,12 @@ function Dashboard() {
   };
 
   const downloadCSV = () => {
-    if (
-      !responseData.data ||
-      !responseData.data.rounds ||
-      responseData.data.rounds.length === 0
-    ) {
+    if (!responseData.rounds || responseData.rounds.length === 0) {
       console.log("No data to download");
       return;
     }
 
-    let csvData = responseData.data.rounds.map((round) => {
+    let csvData = responseData.rounds.map((round) => {
       return Object.keys(round)
         .map((key) => {
           return `"${round[key]}"`;
@@ -144,7 +141,7 @@ function Dashboard() {
         .join(",");
     });
 
-    const keys = Object.keys(responseData.data.rounds[0]);
+    const keys = Object.keys(responseData.rounds[0]);
 
     csvData.unshift(keys.join(",")); // Add the headers to the first line
 
