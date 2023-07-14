@@ -1,4 +1,4 @@
-# Fetch Historical Prices API Endpoint
+# Historical Prices API
 
 ## I. Introduction
 
