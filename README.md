@@ -98,6 +98,8 @@ The API endpoint may return one of the following errors:
 
 ### Single Round Request
 
+In order to fetch the price for a single round, you need to specify the same start and end timestamps. Make sure that the time frame exists. The API endpoint will return the price for the round that is within the specified time frame.
+
 Request:
 
 ```bash
@@ -128,6 +130,8 @@ Response:
 ```
 
 ### Multiple Rounds Request
+
+In order to fetch the prices for multiple rounds, you need to specify different start and end timestamps. Make sure that the start timestamp is less than the end timestamp and that the time frames exist. The API endpoint will return the prices for the rounds that are within the specified time frame.
 
 Request:
 
