@@ -14,8 +14,7 @@ export async function getStartPhaseData(
       publicClient,
       phaseAggregatorContract.address,
       startTimestampBigInt,
-      phaseAggregatorContract.latestRoundId,
-      100000
+      phaseAggregatorContract.latestRoundId
     );
 
     if (error) {
