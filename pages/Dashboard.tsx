@@ -40,6 +40,8 @@ function Dashboard() {
   const [chainError, setChainError] = useState("");
   const [dateError, setDateError] = useState("");
 
+  const [error, setError] = useState(null);
+
   const validateInputs = () => {
     let isValid = true;
 
@@ -91,30 +93,37 @@ function Dashboard() {
     }
     setIsLoading(true);
 
-    let response;
+    try {
+      let response;
 
-    if (mode === "single") {
-      response = await axios.get("/api/price", {
-        params: {
-          contractAddress: contractAddress,
-          chain,
-          startTimestamp: singleDate.getTime() / 1000,
-          endTimestamp: singleDate.getTime() / 1000,
-        },
-      });
-    } else {
-      response = await axios.get("/api/price", {
-        params: {
-          contractAddress: contractAddress,
-          chain,
-          startTimestamp: startDate.getTime() / 1000,
-          endTimestamp: endDate.getTime() / 1000,
-        },
-      });
+      if (mode === "single") {
+        response = await axios.get("/api/price", {
+          params: {
+            contractAddress: contractAddress,
+            chain,
+            startTimestamp: singleDate.getTime() / 1000,
+            endTimestamp: singleDate.getTime() / 1000,
+          },
+        });
+      } else {
+        response = await axios.get("/api/price", {
+          params: {
+            contractAddress: contractAddress,
+            chain,
+            startTimestamp: startDate.getTime() / 1000,
+            endTimestamp: endDate.getTime() / 1000,
+          },
+        });
+      }
+
+      setResponseData(response);
+      setError(null); // clear any previous error
+    } catch (err) {
+      setError(err); // store the error message
+      console.log(err);
+    } finally {
+      setIsLoading(false);
     }
-
-    setResponseData(response);
-    setIsLoading(false);
   };
 
   const downloadCSV = () => {
@@ -309,6 +318,15 @@ function Dashboard() {
           ) : responseData ? (
             <pre>{JSON.stringify(responseData, null, 2)}</pre>
           ) : null}{" "}
+          {error && (
+            <Text
+              color={{
+                base: "red.500",
+              }}
+            >
+              {JSON.stringify(error, null, 2)}
+            </Text>
+          )}
         </Box>
         {responseData && (
           <Button
