@@ -1,10 +1,13 @@
-import Head from "next/head";
-import styles from "../styles/Home.module.css";
+import React from "react";
+import { Providers } from "../components/providers";
+import App from "./app";
 
-export default function Home() {
+function HomePage() {
   return (
-    <div>
-      <h1>Hello World</h1>
-    </div>
+    <Providers>
+      <App />
+    </Providers>
   );
 }
+
+export default HomePage;
