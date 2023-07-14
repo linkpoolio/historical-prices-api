@@ -6,9 +6,14 @@ import { STATUS_CODE } from "../../lib/constants";
 import { formatDate } from "../../lib/date";
 import { getStartPhaseData } from "../../lib/getStartPhaseData";
 import { binarySearchRoundId } from "../../lib/binarySearch";
+import { logger } from "../../lib/logger";
 
 export default async function handler(req, res) {
   const { contractAddress, startTimestamp, endTimestamp, chain } = req.query;
+
+  logger.info(
+    `Received request with parameters: contractAddress=${contractAddress}, startTimestamp=${startTimestamp}, endTimestamp=${endTimestamp}, chain=${chain}`
+  );
 
   const {
     validatedContractAddress,
@@ -20,11 +25,15 @@ export default async function handler(req, res) {
   } = validateInput(contractAddress, chain, startTimestamp, endTimestamp);
 
   if (validationError) {
+    logger.error(`Input validation error: ${validationError}`);
     return res.status(validationStatus).json(validationError);
   }
 
   const publicClient = getClient(validatedChain);
   if (publicClient.error) {
+    logger.error(
+      `Failed to get client for chain ${validatedChain}: ${publicClient.error}`
+    );
     return res.status(publicClient.status).json(publicClient.error);
   }
 
@@ -105,18 +114,22 @@ export default async function handler(req, res) {
     );
 
     if (!startPhaseData) {
+      logger.error(
+        `Failed to get phase data from contract ${validatedContractAddress}`
+      );
       return res.status(STATUS_CODE.INTERNAL_ERROR).json({
         errorCode: "FAILED_TO_FETCH_PHASE_DATA",
         message: `Failed to get phase data from contract ${validatedContractAddress}.`,
       });
     }
 
+    logger.info("Starting to fetch round data...");
+
     const { phaseId, roundId } = startPhaseData;
     startPhaseId = phaseId;
     startRoundId = roundId;
 
     // CASE 1: If the start timestamp is the same as the end timestamp, we only need to fetch one round
-
     if (startTimestamp == endTimestamp) {
       const result = await publicClient.readContract({
         address: phaseAggregatorContracts[startPhaseData.phaseId - 1].address,
@@ -124,13 +137,13 @@ export default async function handler(req, res) {
         functionName: "getRoundData",
         args: [startPhaseData.roundId.toString()],
       });
-      console.log(result);
       const responseRoundData = {
         phaseId: phaseId.toString(),
         roundId: roundId.toString(),
         answer: result[1].toString(),
         timestamp: formatDate(result[3].toString()),
       };
+      logger.info("Completed fetching round data successfully");
       return res.status(STATUS_CODE.OK).json({
         description,
         decimals,
@@ -183,8 +196,6 @@ export default async function handler(req, res) {
 
         roundsData.push(formattedRoundData);
 
-        console.log("Round data: ", formattedRoundData);
-
         if (currentRoundData.roundId == phaseAggregatorContract.latestRoundId) {
           break; // We reached the latest round for this phase
         }
@@ -209,12 +220,16 @@ export default async function handler(req, res) {
       }
     }
 
+    logger.info("Completed fetching round data successfully");
     return res.status(STATUS_CODE.OK).json({
       description,
       decimals,
       rounds: roundsData,
     });
   } catch (error) {
+    logger.error(
+      `Failed to get phase data from contract ${validatedContractAddress}: ${error.message}`
+    );
     return res.status(STATUS_CODE.INTERNAL_ERROR).json({
       errorCode: "FAILED_TO_FETCH_PHASE_DATA",
       message: `Failed to get phase data from contract ${validatedContractAddress}: ${error.message}.`,
