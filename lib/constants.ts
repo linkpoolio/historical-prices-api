@@ -23,5 +23,4 @@ export const STATUS_CODE = {
   OK: 200,
 };
 
-// Chunk size for multicall
-export const CHUNK_SIZE = 100;
+export const PROXIMITY = 86400; // 1 day

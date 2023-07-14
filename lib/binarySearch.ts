@@ -1,17 +1,13 @@
 import AccessControlledOffchainAggregator from "../abi/EACAggregatorProxy.json";
+import { PROXIMITY } from "./constants";
 
-type Response = {
-  roundId?: bigint;
-  timestamp?: bigint;
-  error?: string;
-};
 export const binarySearchRoundId = async (
   client,
   contractAddress,
   targetTimestamp,
   latestRoundId,
-  proximity
-): Promise<Response> => {
+  proximity = PROXIMITY
+) => {
   const aggregatorContract = {
     address: contractAddress,
     abi: AccessControlledOffchainAggregator,
@@ -30,7 +26,6 @@ export const binarySearchRoundId = async (
         functionName: "getTimestamp",
         args: [mid.toString()],
       });
-      console.log("BINARY", timestamp);
     } catch (error) {
       low = mid + BigInt(1);
       continue;
