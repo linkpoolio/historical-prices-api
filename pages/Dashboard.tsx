@@ -15,6 +15,7 @@ import {
   FormErrorMessage,
   Spacer,
   Text,
+  Spinner,
 } from "@chakra-ui/react";
 import axios from "axios";
 import DatePicker from "react-datepicker";
@@ -33,6 +34,7 @@ function Dashboard() {
   const [singleDate, setSingleDate] = useState(new Date());
   const [responseData, setResponseData] = useState(null);
   const [mode, setMode] = useState("single");
+  const [isLoading, setIsLoading] = useState(false);
 
   const [contractAddressError, setContractAddressError] = useState("");
   const [chainError, setChainError] = useState("");
@@ -87,6 +89,8 @@ function Dashboard() {
     if (!validateInputs()) {
       return;
     }
+    setIsLoading(true);
+
     let response;
 
     if (mode === "single") {
@@ -99,9 +103,6 @@ function Dashboard() {
         },
       });
     } else {
-      console.log("startDate", startDate.getTime() / 1000);
-      console.log("endDate", endDate.getTime() / 1000);
-
       response = await axios.get("/api/price", {
         params: {
           contractAddress: contractAddress,
@@ -113,6 +114,7 @@ function Dashboard() {
     }
 
     setResponseData(response);
+    setIsLoading(false);
   };
 
   const downloadCSV = () => {
@@ -302,7 +304,11 @@ function Dashboard() {
           Response
         </Heading>
         <Box overflowY={"auto"} maxHeight={"50vh"}>
-          {responseData && <pre>{JSON.stringify(responseData, null, 2)}</pre>}
+          {isLoading ? (
+            <Spinner />
+          ) : responseData ? (
+            <pre>{JSON.stringify(responseData, null, 2)}</pre>
+          ) : null}{" "}
         </Box>
         {responseData && (
           <Button
