@@ -37,9 +37,6 @@ export default async function handler(req, res) {
     return res.status(publicClient.status).json(publicClient.error);
   }
 
-  const startTimestampBigInt = BigInt(validatedStartTimestamp);
-  const endTimestampBigInt = BigInt(validatedEndTimestamp);
-
   const aggregatorContract = {
     address: validatedContractAddress,
     abi: EACAggregatorProxy,
@@ -109,7 +106,7 @@ export default async function handler(req, res) {
     // Now use the helper function in your main code:
     const startPhaseData = await getStartPhaseData(
       phaseAggregatorContracts,
-      startTimestampBigInt,
+      validatedStartTimestamp,
       publicClient
     );
 
@@ -123,7 +120,7 @@ export default async function handler(req, res) {
       });
     }
 
-    logger.info("Starting to fetch round data...");
+    logger.info(`Starting to fetch round data for pair ${description}...`);
 
     const { phaseId, roundId } = startPhaseData;
     startPhaseId = phaseId;
@@ -200,7 +197,7 @@ export default async function handler(req, res) {
           break; // We reached the latest round for this phase
         }
 
-        if (currentRoundData.timestamp >= endTimestampBigInt) {
+        if (currentRoundData.timestamp >= validatedEndTimestamp) {
           break; // We reached the end timestamp
         }
 

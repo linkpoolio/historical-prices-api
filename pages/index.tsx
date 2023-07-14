@@ -1,10 +1,11 @@
-import Head from "next/head";
-import styles from "../styles/Home.module.css";
+import React from "react";
+import { Providers } from "../components/Providers";
+import { App } from "./App"; // Ensure your App component is inside components or similar directory.
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div>
-      <h1>Hello World</h1>
-    </div>
+    <Providers>
+      <App />
+    </Providers>
   );
 }

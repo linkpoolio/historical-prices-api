@@ -33,10 +33,28 @@ export function validateChain(chain) {
 
 export function validateTimestamps(startTimestamp, endTimestamp) {
   const currentTimestamp = Math.floor(Date.now() / 1000);
-  if (
-    (startTimestamp && startTimestamp > currentTimestamp) ||
-    endTimestamp < startTimestamp
-  ) {
+  const startTime = Math.floor(startTimestamp);
+  const endTime = Math.floor(endTimestamp);
+
+  if (!startTimestamp || !endTimestamp) {
+    return {
+      status: STATUS_CODE.BAD_REQUEST,
+      error: {
+        errorCode: "MISSING_TIMESTAMP",
+        message: `Missing start timestamp or end timestamp.`,
+      },
+    };
+  }
+  if (isNaN(startTime) || isNaN(endTime)) {
+    return {
+      status: STATUS_CODE.BAD_REQUEST,
+      error: {
+        errorCode: "INVALID_TIMESTAMP",
+        message: `Start timestamp ${startTimestamp} or end timestamp ${endTimestamp} is not a number.`,
+      },
+    };
+  }
+  if ((startTime && startTime > currentTimestamp) || endTime < startTime) {
     return {
       status: STATUS_CODE.BAD_REQUEST,
       error: {
@@ -46,9 +64,19 @@ export function validateTimestamps(startTimestamp, endTimestamp) {
     };
   }
 
+  if (!Number.isInteger(startTime) || !Number.isInteger(endTime)) {
+    return {
+      status: STATUS_CODE.BAD_REQUEST,
+      error: {
+        errorCode: "INVALID_TIMESTAMP",
+        message: `Start timestamp ${startTimestamp} or end timestamp ${endTimestamp} is not an integer.`,
+      },
+    };
+  }
+
   return {
-    validatedStartTimestamp: startTimestamp,
-    validatedEndTimestamp: endTimestamp,
+    validatedStartTimestamp: BigInt(startTime),
+    validatedEndTimestamp: BigInt(endTime),
   };
 }
 
