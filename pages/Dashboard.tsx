@@ -14,6 +14,7 @@ import {
   FormControl,
   FormErrorMessage,
   Spacer,
+  Text,
 } from "@chakra-ui/react";
 import axios from "axios";
 import DatePicker from "react-datepicker";
@@ -58,7 +59,18 @@ function Dashboard() {
       setChainError("");
     }
 
-    if (mode === "single" && !singleDate) {
+    const currentDate = new Date();
+
+    if (mode === "single" && singleDate > currentDate) {
+      setDateError("Date cannot be in the future");
+      isValid = false;
+    } else if (
+      mode === "range" &&
+      (startDate > currentDate || endDate > currentDate)
+    ) {
+      setDateError("Start date or end date cannot be in the future");
+      isValid = false;
+    } else if (mode === "single" && !singleDate) {
       setDateError("Date is required");
       isValid = false;
     } else if (mode === "range" && (!startDate || !endDate)) {
@@ -67,8 +79,6 @@ function Dashboard() {
     } else {
       setDateError("");
     }
-
-    // Add more validation as needed
 
     return isValid;
   };
@@ -203,47 +213,54 @@ function Dashboard() {
             <Radio value="range">Date Range</Radio>
           </Stack>
         </RadioGroup>
-        <FormControl isInvalid={!!dateError}>
-          <FormLabel
-            mt={{
-              base: "4",
-              md: "4",
-              lg: "4",
+        <FormLabel
+          mt={{
+            base: "4",
+            md: "4",
+            lg: "4",
+          }}
+        >
+          Date
+        </FormLabel>
+        {mode === "single" && (
+          <DatePicker
+            selected={singleDate}
+            onSelect={(date) => setSingleDate(date)}
+            showTimeSelect
+            dateFormat="Pp"
+          />
+        )}
+        {mode === "range" && (
+          <>
+            <DatePicker
+              selected={startDate}
+              onSelect={(date) => setStartDate(date)}
+              showTimeSelect
+              startDate={startDate}
+              endDate={endDate}
+            />
+            <Spacer />
+
+            <DatePicker
+              selected={endDate}
+              onSelect={(date) => setEndDate(date)}
+              showTimeSelect
+              startDate={startDate}
+              endDate={endDate}
+              minDate={startDate}
+            />
+          </>
+        )}
+        {dateError && (
+          <Text
+            color={{
+              base: "red.500",
             }}
           >
-            Date
-          </FormLabel>
-          {mode === "single" && (
-            <DatePicker
-              selected={singleDate}
-              onSelect={(date) => setSingleDate(date)}
-              showTimeSelect
-              dateFormat="Pp"
-            />
-          )}
-          {mode === "range" && (
-            <>
-              <DatePicker
-                selected={startDate}
-                onSelect={(date) => setStartDate(date)}
-                showTimeSelect
-                startDate={startDate}
-                endDate={endDate}
-              />
-              <Spacer />
+            {dateError}
+          </Text>
+        )}
 
-              <DatePicker
-                selected={endDate}
-                onSelect={(date) => setEndDate(date)}
-                showTimeSelect
-                startDate={startDate}
-                endDate={endDate}
-                minDate={startDate}
-              />
-            </>
-          )}
-          <FormErrorMessage>{dateError}</FormErrorMessage>
-        </FormControl>
         <Button onClick={fetchData}>Fetch Data</Button>
       </Box>
       <Box
