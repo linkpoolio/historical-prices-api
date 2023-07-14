@@ -1,20 +1,22 @@
 import EACAggregatorProxy from "../abi/EACAggregatorProxy.json";
 import AccessControlledOffchainAggregator from "../abi/AccessControlledOffchainAggregator.json";
-import { getClient } from "../lib/client";
 import {
+  getClient,
   validateContractAddress,
   validateChain,
   validateTimestamps,
-} from "../lib/inputValidations";
-import { STATUS_CODE } from "../lib/constants";
-import { binarySearchRoundId } from "../lib/binarySearch";
-import { getStartPhaseData } from "../lib/getStartPhaseDate";
-import { logger } from "../lib/logger";
-import { formatDate } from "../lib/date";
+  STATUS_CODE,
+  binarySearchRoundId,
+  getStartPhaseData,
+  logger,
+  formatDate,
+} from "../lib";
 
 type Response = {
-  status: number;
-  data?: Data | Data[];
+  status?: number;
+  description?: string;
+  decimals?: number;
+  rounds?: Data | Data[];
   error?: Error;
 };
 type Data = {
@@ -181,8 +183,9 @@ export const getRoundsByTimestamp = async (
       };
       logger.info("Completed fetching round data successfully");
       return {
-        status: STATUS_CODE.OK,
-        data: [responseRoundData],
+        description,
+        decimals,
+        rounds: [responseRoundData],
       };
     }
 
@@ -190,7 +193,7 @@ export const getRoundsByTimestamp = async (
 
     // Now that the start phase data is found, we can start fetching the rounds up until the end timestamp. We can't use multicall.
 
-    let currentPhaseId = startPhaseId;
+    let currentPhaseId: number = startPhaseId;
     let currentRoundId = startRoundId;
     let currentRoundData;
     let roundsData = [];
@@ -257,8 +260,9 @@ export const getRoundsByTimestamp = async (
 
     logger.info("Completed fetching round data successfully");
     return {
-      status: STATUS_CODE.OK,
-      data: roundsData,
+      description,
+      decimals,
+      rounds: roundsData,
     };
   } catch (error) {
     logger.error(

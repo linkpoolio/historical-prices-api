@@ -1,4 +1,4 @@
-import { binarySearchRoundId } from "./binarySearch";
+import { binarySearchRoundId } from "./binary-search";
 
 export async function getStartPhaseData(
   phaseAggregatorContracts,
