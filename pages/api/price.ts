@@ -3,6 +3,7 @@ import AccessControlledOffchainAggregator from "../../abi/AccessControlledOffcha
 import { getClient } from "../../lib/client";
 import { validateInput } from "../../lib/inputValidations";
 import { STATUS_CODE } from "../../lib/constants";
+import { formatDate } from "../../lib/date";
 import { getStartPhaseData } from "../../lib/getStartPhaseData";
 import { binarySearchRoundId } from "../../lib/binarySearch";
 
@@ -114,95 +115,105 @@ export default async function handler(req, res) {
     startPhaseId = phaseId;
     startRoundId = roundId;
 
+    // CASE 1: If the start timestamp is the same as the end timestamp, we only need to fetch one round
+
+    if (startTimestamp == endTimestamp) {
+      const result = await publicClient.readContract({
+        address: phaseAggregatorContracts[startPhaseData.phaseId - 1].address,
+        abi: AccessControlledOffchainAggregator,
+        functionName: "getRoundData",
+        args: [startPhaseData.roundId.toString()],
+      });
+      console.log(result);
+      const responseRoundData = {
+        phaseId: phaseId.toString(),
+        roundId: roundId.toString(),
+        answer: result[1].toString(),
+        timestamp: formatDate(result[3].toString()),
+      };
+      return res.status(STATUS_CODE.OK).json({
+        description,
+        decimals,
+        rounds: [responseRoundData],
+      });
+    }
+
+    // CASE 2: If the start timestamp is before the end timestamp, we need to fetch multiple rounds
+
     // Now that the start phase data is found, we can start fetching the rounds up until the end timestamp. We can't use multicall.
 
     let currentPhaseId = startPhaseId;
     let currentRoundId = startRoundId;
+    let currentRoundData;
     let roundsData = [];
 
-    try {
-      while (true) {
-        let roundData;
-        roundData = await publicClient.readContract({
-          address: phaseAggregatorContracts[currentPhaseId - 1].address,
-          abi: AccessControlledOffchainAggregator,
-          functionName: "getRoundData",
-          args: [currentRoundId.toString()],
-        });
+    for (let i = 0; i < phaseAggregatorContracts.length; i++) {
+      const phaseAggregatorContract = phaseAggregatorContracts[i];
 
-        const roundTimestamp = BigInt(roundData[2]);
-        // Break the loop if the current round's timestamp exceeds the end timestamp
-        if (roundTimestamp > endTimestampBigInt) {
-          break;
-        }
-
-        const responseRoundData = {
-          phaseId: currentPhaseId.toString(),
-          roundId: currentRoundId.toString(),
-          answer: roundData[1].toString(),
-          timestamp: new Date(Number(roundData[3].toString()) * 1000),
-        };
-
-        roundsData.push(responseRoundData);
-
-        console.log("Pushed round data: ", responseRoundData);
-
-        // break the loop if the we reached the last round and the last phase
-        if (
-          currentRoundId ===
-            phaseAggregatorContracts[currentPhaseId - 1].latestRoundId &&
-          currentPhaseId === phaseAggregatorContracts.length
-        ) {
-          break;
-        }
-
-        if (
-          currentRoundId ===
-          phaseAggregatorContracts[currentPhaseId - 1].latestRoundId
-        ) {
-          let error = true;
-          let roundId;
-
-          while (error) {
-            ({ roundId, error } = await binarySearchRoundId(
-              publicClient,
-              phaseAggregatorContracts[currentPhaseId].address,
-              roundData[3],
-              phaseAggregatorContracts[currentPhaseId].latestRoundId
-            ));
-
-            // If an error still exists, print the error message and increment the currentPhaseId.
-            if (error) {
-              console.log("Error occurred in phaseId: ", currentPhaseId);
-              currentPhaseId++;
-
-              // Check if we've gone through all the contracts.
-              if (currentPhaseId >= phaseAggregatorContracts.length) {
-                console.error(
-                  "All contracts have been searched, no valid roundId found."
-                );
-                break;
-              }
-            }
-          }
-
-          currentRoundId = roundId;
-          currentPhaseId++;
-        }
-
-        currentRoundId++;
+      // Skip if not the current phase
+      if (phaseAggregatorContract.phaseId != currentPhaseId) {
+        continue;
       }
 
-      // Return the rounds data
-      return res
-        .status(STATUS_CODE.OK)
-        .json({ description, decimals, rounds: roundsData });
-    } catch (error) {
-      return res.status(STATUS_CODE.INTERNAL_ERROR).json({
-        errorCode: "FAILED_TO_FETCH_ROUNDS_DATA",
-        message: `Failed to get rounds data from contract ${validatedContractAddress}: ${error.message}.`,
-      });
+      while (true) {
+        // Continuously fetch rounds
+        try {
+          currentRoundData = await publicClient.readContract({
+            address: phaseAggregatorContract.address,
+            abi: AccessControlledOffchainAggregator,
+            functionName: "getRoundData",
+            args: [currentRoundId.toString()],
+          });
+        } catch (error) {
+          break; // No more rounds, break inner loop
+        }
+
+        currentRoundData = {
+          roundId: currentRoundData[0],
+          answer: currentRoundData[1],
+          timestamp: currentRoundData[3],
+        };
+
+        const formattedRoundData = {
+          phaseId: currentPhaseId.toString(),
+          roundId: currentRoundId.toString(),
+          answer: currentRoundData.answer.toString(),
+          timestamp: formatDate(currentRoundData.timestamp.toString()),
+        };
+
+        roundsData.push(formattedRoundData);
+
+        console.log("Round data: ", formattedRoundData);
+
+        if (currentRoundData.roundId == phaseAggregatorContract.latestRoundId) {
+          break; // We reached the latest round for this phase
+        }
+
+        if (currentRoundData.timestamp >= endTimestampBigInt) {
+          break; // We reached the end timestamp
+        }
+
+        currentRoundId++; // Proceed to next round in the same phase
+      }
+
+      // Preparing to go to the next phase
+      currentPhaseId++;
+      if (phaseAggregatorContracts[i + 1]) {
+        const { roundId } = await binarySearchRoundId(
+          publicClient,
+          phaseAggregatorContracts[i + 1].address,
+          currentRoundData.timestamp,
+          phaseAggregatorContracts[i + 1].latestRoundId
+        );
+        currentRoundId = roundId;
+      }
     }
+
+    return res.status(STATUS_CODE.OK).json({
+      description,
+      decimals,
+      rounds: roundsData,
+    });
   } catch (error) {
     return res.status(STATUS_CODE.INTERNAL_ERROR).json({
       errorCode: "FAILED_TO_FETCH_PHASE_DATA",

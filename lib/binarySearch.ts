@@ -1,10 +1,12 @@
 import AccessControlledOffchainAggregator from "../abi/EACAggregatorProxy.json";
+import { PROXIMITY } from "./constants";
 
 export const binarySearchRoundId = async (
   client,
   contractAddress,
   targetTimestamp,
-  latestRoundId
+  latestRoundId,
+  proximity = PROXIMITY
 ) => {
   const aggregatorContract = {
     address: contractAddress,
@@ -13,9 +15,6 @@ export const binarySearchRoundId = async (
 
   let low = BigInt(0);
   let high = BigInt(Number(latestRoundId));
-
-  let closestTimestamp = null;
-  let closestRoundId = null;
 
   while (low <= high) {
     const mid = low + (high - low) / BigInt(2);
@@ -35,14 +34,11 @@ export const binarySearchRoundId = async (
     if (timestamp) {
       const midTimestamp = BigInt(timestamp);
 
-      // If it's the first timestamp found or it's closer than the previous closest timestamp
+      // Check if the absolute difference is within the proximity
       if (
-        closestTimestamp === null ||
-        Math.abs(Number(midTimestamp) - Number(targetTimestamp)) <
-          Math.abs(Number(closestTimestamp) - Number(targetTimestamp))
+        Math.abs(Number(midTimestamp) - Number(targetTimestamp)) <= proximity
       ) {
-        closestTimestamp = midTimestamp;
-        closestRoundId = mid;
+        return { roundId: mid, timestamp: midTimestamp };
       }
 
       if (midTimestamp < targetTimestamp) {
@@ -55,10 +51,6 @@ export const binarySearchRoundId = async (
     }
   }
 
-  // Return the closest timestamp and its roundId, or an error if none were found
-  if (closestRoundId !== null) {
-    return { roundId: closestRoundId, timestamp: closestTimestamp };
-  } else {
-    return { error: "No timestamp found" };
-  }
+  // If the function hasn't returned by this point, no match within the desired proximity was found
+  return { error: "No match found within the desired proximity" };
 };
