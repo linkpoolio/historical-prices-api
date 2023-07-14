@@ -1,51 +1,49 @@
-import EACAggregatorProxy from "../abi/EACAggregatorProxy.json";
+import AccessControlledOffchainAggregator from "../abi/EACAggregatorProxy.json";
 
+type Response = {
+  roundId?: bigint;
+  timestamp?: bigint;
+  error?: string;
+};
 export const binarySearchRoundId = async (
   client,
   contractAddress,
-  targetTimestamp
-) => {
+  targetTimestamp,
+  latestRoundId,
+  proximity
+): Promise<Response> => {
   const aggregatorContract = {
     address: contractAddress,
-    abi: EACAggregatorProxy,
+    abi: AccessControlledOffchainAggregator,
   } as const;
 
-  let latestRoundData;
-  try {
-    latestRoundData = await client.readContract({
-      ...aggregatorContract,
-      functionName: "latestRoundData",
-    });
-  } catch (error) {
-    console.error("Failed to fetch latest round data:", error);
-    throw error;
-  }
-
   let low = BigInt(0);
-  let high = BigInt(latestRoundData[0]);
-  let closest = high;
-  let closestRoundData = null;
+  let high = BigInt(Number(latestRoundId));
 
   while (low <= high) {
     const mid = low + (high - low) / BigInt(2);
 
-    let roundData;
+    let timestamp;
     try {
-      roundData = await client.readContract({
+      timestamp = await client.readContract({
         ...aggregatorContract,
-        functionName: "getRoundData",
+        functionName: "getTimestamp",
         args: [mid.toString()],
       });
+      console.log("BINARY", timestamp);
     } catch (error) {
       low = mid + BigInt(1);
       continue;
     }
 
-    if (roundData && roundData[3]) {
-      const midTimestamp = BigInt(roundData[3]);
+    if (timestamp) {
+      const midTimestamp = BigInt(timestamp);
 
-      if (midTimestamp === targetTimestamp) {
-        return { roundId: mid, roundData };
+      // Check if the absolute difference is within the proximity
+      if (
+        Math.abs(Number(midTimestamp) - Number(targetTimestamp)) <= proximity
+      ) {
+        return { roundId: mid, timestamp: midTimestamp };
       }
 
       if (midTimestamp < targetTimestamp) {
@@ -53,18 +51,11 @@ export const binarySearchRoundId = async (
       } else {
         high = mid - BigInt(1);
       }
-
-      if (
-        Math.abs(Number(midTimestamp) - Number(targetTimestamp)) <
-        Math.abs(Number(closest) - Number(targetTimestamp))
-      ) {
-        closest = mid;
-        closestRoundData = roundData;
-      }
     } else {
       low = mid + BigInt(1);
     }
   }
 
-  return { roundId: closest, roundData: closestRoundData };
+  // If the function hasn't returned by this point, no match within the desired proximity was found
+  return { error: "No match found within the desired proximity" };
 };
