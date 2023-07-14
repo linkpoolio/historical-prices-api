@@ -29,11 +29,31 @@ yarn install
 yarn start
 ```
 
-### 4. Access UI App:
+### 4. Setup the environment variables:
+
+Copy the `.env.template` and create a `.env.local` file in the root directory of the project and configure the RPC URLs for the blockchain networks you want to use:
+
+```bash
+# Ethereum
+ETHEREUM_MAINNET_RPC_URL=
+
+# Goerli
+GOERLI_RPC_URL=
+
+# Arbitrum
+ARBITRUM_MAINNET_RPC_URL=
+
+# Binance Smart Chain
+BSC_MAINNET_RPC_URL=
+
+...
+```
+
+### 5. Access UI App:
 
 You can now access the UI app at `http://localhost:3000`.
 
-### 5. Access the API Endpoint:
+### 6. Access the API Endpoint:
 
 You can now access the API at `http://localhost:3000/api/price`.
 
