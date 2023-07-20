@@ -16,6 +16,7 @@ import { ContractAddressInput } from "./ContractAddressInput";
 import { ChainInput } from "./ChainInput";
 import { ModeInput } from "./ModeInput";
 import { DateInput } from "./DateInput";
+import { RPCInput } from "./RPCInput";
 
 function Form({ fetchData, isLoading }) {
   const [contractAddress, setContractAddress] = useState("");
@@ -28,6 +29,8 @@ function Form({ fetchData, isLoading }) {
   const [contractAddressError, setContractAddressError] = useState("");
   const [chainError, setChainError] = useState("");
   const [dateError, setDateError] = useState("");
+  const [rpc, setRPC] = useState("");
+  const [rpcError, setRPCError] = useState("");
 
   const validateInputs = () => {
     let isValid = true;
@@ -79,11 +82,26 @@ function Form({ fetchData, isLoading }) {
     }
 
     try {
-      fetchData(contractAddress, chain, mode, singleDate, startDate, endDate);
+      fetchData(
+        contractAddress,
+        chain,
+        mode,
+        singleDate,
+        startDate,
+        endDate,
+        rpc
+      );
     } catch (err) {
       console.log(err);
     }
   };
+
+  const isFormFilled =
+    contractAddress.trim() !== "" &&
+    chain.trim() !== "" &&
+    rpc.trim() !== "" &&
+    ((mode === "single" && singleDate) ||
+      (mode === "range" && startDate && endDate));
 
   const backgroundColor = useColorModeValue("gray.100", "gray.100");
   const color = useColorModeValue("black", "white");
@@ -91,20 +109,23 @@ function Form({ fetchData, isLoading }) {
   return (
     <Box
       flex="1"
-      minHeight="60vh"
+      minHeight="70vh"
       padding={4}
       backgroundColor={backgroundColor}
       color={color}
       display="flex"
       flexDirection="column"
+      maxWidth={{
+        base: "100%",
+        md: "600px",
+      }}
+      minWidth={{
+        base: "100%",
+        md: "600px",
+      }}
+      width="100%"
     >
-      <Heading
-        display={{ base: "none", md: "inline" }}
-        as="h1"
-        size="md"
-        color="brand.primary"
-        fontSize="lg"
-      >
+      <Heading as="h1" size="md" color="brand.primary" fontSize="lg">
         Request Parameters
       </Heading>
       <ContractAddressInput
@@ -113,6 +134,7 @@ function Form({ fetchData, isLoading }) {
         contractAddressError={contractAddressError}
       />
       <ChainInput chain={chain} setChain={setChain} chainError={chainError} />
+      <RPCInput rpc={rpc} setRPC={setRPC} rpcError={rpcError} />
       <ModeInput mode={mode} setMode={setMode} />
       <DateInput
         mode={mode}
@@ -130,6 +152,7 @@ function Form({ fetchData, isLoading }) {
           isLoading={isLoading}
           loadingText={isLoading ? "Loading..." : "Fetch Data"}
           onClick={handleFetchData}
+          isDisabled={!isFormFilled}
         >
           Fetch Data
         </Button>

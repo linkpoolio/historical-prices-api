@@ -14,7 +14,16 @@ export const DateInput = ({
 }) => {
   return (
     <>
-      <FormLabel mt={{ base: "4", md: "4", lg: "4" }}>Date</FormLabel>
+      <FormLabel
+        mt={{ base: "4", md: "4", lg: "4" }}
+        mb={{
+          base: "2",
+          md: "2",
+          lg: "2",
+        }}
+      >
+        Date
+      </FormLabel>
       {mode === "single" && (
         <DatePicker
           selected={singleDate}

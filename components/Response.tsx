@@ -6,6 +6,7 @@ import {
   Text,
   useColorModeValue,
   Flex,
+  Code,
 } from "@chakra-ui/react";
 
 function Response({ responseData, error, isLoading }) {
@@ -41,51 +42,48 @@ function Response({ responseData, error, isLoading }) {
   const backgroundColor = useColorModeValue("gray.100", "gray.100");
   const color = useColorModeValue("black", "white");
 
-  console.log(responseData);
-
   return (
-    <Box
+    <Flex
+      direction="column"
+      justify="space-between"
       flex="1"
-      minHeight="60vh"
-      maxHeight="60vh"
+      minHeight="70vh"
+      maxHeight="70vh"
       backgroundColor={backgroundColor}
       color={color}
       padding={4}
+      maxWidth={{
+        base: "100%",
+        md: "600px",
+      }}
+      minWidth={{
+        base: "100%",
+        md: "600px",
+      }}
+      width="100%"
     >
-      <Heading
-        display={{ base: "none", md: "inline" }}
-        as="h1"
-        size="md"
-        color="brand.primary"
-        fontSize="lg"
-      >
+      <Heading as="h1" size="md" color="brand.primary" fontSize="lg">
         Response
       </Heading>
-      <Box
-        overflowY={"auto"}
-        maxHeight={"50vh"}
-        minHeight={"50vh"}
-        height="100%"
-      >
-        {responseData ? (
-          <pre>{JSON.stringify(responseData, null, 2)}</pre>
+      <Box overflowY="auto" maxHeight="60vh">
+        {responseData && !isLoading ? (
+          <Code whiteSpace="pre-wrap">
+            {JSON.stringify(responseData, null, 2)}
+          </Code>
         ) : null}
         {error && (
-          <Text
-            color={{
-              base: "red.500",
-            }}
-          >
+          <Code whiteSpace="pre-wrap" color="red.500">
             {JSON.stringify(error, null, 2)}
-          </Text>
+          </Code>
         )}
       </Box>
+
       {responseData && !isLoading && (
         <Button variant="default" onClick={downloadCSV}>
           Export to CSV
         </Button>
       )}
-    </Box>
+    </Flex>
   );
 }
 

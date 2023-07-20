@@ -9,13 +9,9 @@ import {
 } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 
-export const ContractAddressInput = ({
-  contractAddress,
-  setContractAddress,
-  contractAddressError,
-}) => {
+export const RPCInput = ({ rpc, setRPC, rpcError }) => {
   return (
-    <FormControl isInvalid={!!contractAddressError}>
+    <FormControl isInvalid={!!rpcError}>
       <Flex mt={{ base: "4", md: "4", lg: "4" }} alignItems="center">
         <FormLabel
           mb={{
@@ -24,14 +20,9 @@ export const ContractAddressInput = ({
             lg: "2",
           }}
         >
-          Contract Address
-        </FormLabel>
-        <Link
-          href={"https://data.chain.link/"}
-          m="0"
-          isExternal
-          color="blue.500"
-        >
+          RPC URL
+        </FormLabel>{" "}
+        <Link href={"https://chainlist.org/"} m="0" isExternal color="blue.500">
           <ExternalLinkIcon
             mx="1px"
             mb={{
@@ -42,13 +33,12 @@ export const ContractAddressInput = ({
           />
         </Link>
       </Flex>
-
       <Input
-        placeholder="Contract Address"
-        value={contractAddress}
-        onChange={(e) => setContractAddress(e.target.value)}
+        placeholder="https://example.com"
+        value={rpc}
+        onChange={(e) => setRPC(e.target.value)}
       />
-      <FormErrorMessage>{contractAddressError}</FormErrorMessage>
+      <FormErrorMessage>{rpc}</FormErrorMessage>
     </FormControl>
   );
 };

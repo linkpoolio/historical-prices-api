@@ -5,6 +5,7 @@ import {
   validateContractAddress,
   validateChain,
   validateTimestamps,
+  validateRPCUrl,
   STATUS_CODE,
   binarySearchRoundId,
   getStartPhaseData,
@@ -33,8 +34,9 @@ type ValidationResult = {
   error?: Error;
   validatedContractAddress?: string;
   validatedChain?: string;
-  validatedStartTimestamp?: number;
-  validatedEndTimestamp?: number;
+  validatedStartTimestamp?: bigint;
+  validatedEndTimestamp?: bigint;
+  validatedRPCUrl?: string;
 };
 
 type Error = {
@@ -46,10 +48,11 @@ export const getRoundsByTimestamp = async (
   contractAddress: string,
   startTimestamp: string,
   endTimestamp: string,
-  chain: string
+  chain: string,
+  rpcUrl: string
 ): Promise<Response> => {
   logger.info(
-    `Received request with parameters: contractAddress=${contractAddress}, startTimestamp=${startTimestamp}, endTimestamp=${endTimestamp}, chain=${chain}`
+    `Received request with parameters: contractAddress=${contractAddress}, startTimestamp=${startTimestamp}, endTimestamp=${endTimestamp}, chain=${chain}, rpcUrl=${rpcUrl}`
   );
   const {
     error,
@@ -57,7 +60,14 @@ export const getRoundsByTimestamp = async (
     validatedChain,
     validatedStartTimestamp,
     validatedEndTimestamp,
-  } = validateInputs(contractAddress, chain, startTimestamp, endTimestamp);
+    validatedRPCUrl,
+  } = validateInputs(
+    contractAddress,
+    chain,
+    startTimestamp,
+    endTimestamp,
+    rpcUrl
+  );
 
   if (error) {
     return errorResponse(
@@ -67,7 +77,7 @@ export const getRoundsByTimestamp = async (
     );
   }
 
-  const publicClient = getClient(validatedChain);
+  const publicClient = getClient(validatedChain, validatedRPCUrl);
   if (publicClient.error) {
     return {
       status: publicClient.status,
@@ -282,7 +292,8 @@ const validateInputs = (
   contractAddress: string,
   chain: string,
   startTimestamp: string,
-  endTimestamp: string
+  endTimestamp: string,
+  rpcUrl: string
 ): ValidationResult => {
   const validationResultContract = validateContractAddress(contractAddress);
   if (validationResultContract.error) {
@@ -302,10 +313,16 @@ const validateInputs = (
     return validationResultTimestamps;
   }
 
+  const validationRPCUrl = validateRPCUrl(rpcUrl);
+  if (validationRPCUrl.error) {
+    return validationRPCUrl;
+  }
+
   return {
     ...validationResultContract,
     ...validationResultChain,
     ...validationResultTimestamps,
+    ...validationRPCUrl,
   };
 };
 

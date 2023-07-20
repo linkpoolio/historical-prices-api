@@ -1,5 +1,6 @@
 import { isAddress } from "viem";
 import { SUPPORTED_CHAINS, STATUS_CODE } from "./constants";
+import { start } from "repl";
 
 export function validateContractAddress(contractAddress) {
   if (!contractAddress || !isAddress(contractAddress)) {
@@ -13,6 +14,20 @@ export function validateContractAddress(contractAddress) {
   }
 
   return { validatedContractAddress: contractAddress };
+}
+
+export function validateRPCUrl(rpcUrl) {
+  if (!rpcUrl || typeof rpcUrl !== "string") {
+    return {
+      status: STATUS_CODE.BAD_REQUEST,
+      error: {
+        errorCode: "MISSING_RPC_URL",
+        message: `Missing or invalid RPC URL.`,
+      },
+    };
+  }
+
+  return { validatedRPCUrl: rpcUrl };
 }
 
 export function validateChain(chain) {
@@ -54,7 +69,7 @@ export function validateTimestamps(startTimestamp, endTimestamp) {
       },
     };
   }
-  if ((startTime && startTime > currentTimestamp) || endTime < startTime) {
+  if (startTime > endTime) {
     return {
       status: STATUS_CODE.BAD_REQUEST,
       error: {
@@ -84,7 +99,8 @@ export const validateInput = (
   contractAddress,
   chain,
   startTimestamp,
-  endTimestamp
+  endTimestamp,
+  rpcUrl
 ) => {
   let validationResult;
 
@@ -104,12 +120,21 @@ export const validateInput = (
   if (validationResult.error) {
     return { status: validationResult.status, error: validationResult.error };
   }
+
   const { validatedStartTimestamp, validatedEndTimestamp } = validationResult;
+
+  validationResult = validateRPCUrl(rpcUrl);
+  if (validationResult.error) {
+    return { status: validationResult.status, error: validationResult.error };
+  }
+
+  const validatedRPCUrl = validationResult.validatedRPCUrl;
 
   return {
     validatedContractAddress,
     validatedChain,
     validatedStartTimestamp,
     validatedEndTimestamp,
+    validatedRPCUrl,
   };
 };
