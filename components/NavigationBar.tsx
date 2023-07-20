@@ -1,6 +1,6 @@
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { Heading, Box, Container, Flex, Link, Button } from "@chakra-ui/react";
+import { Heading, Box, Container, Flex } from "@chakra-ui/react";
 
 export const NavigationBar = () => {
   return (

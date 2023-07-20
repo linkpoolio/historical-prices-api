@@ -267,6 +267,7 @@ function Dashboard() {
               showTimeSelect
               startDate={startDate}
               endDate={endDate}
+              dateFormat="Pp"
             />
             <Spacer />
 
@@ -277,6 +278,7 @@ function Dashboard() {
               startDate={startDate}
               endDate={endDate}
               minDate={startDate}
+              dateFormat="Pp"
             />
           </>
         )}

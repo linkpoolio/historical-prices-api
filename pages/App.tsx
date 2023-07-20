@@ -1,11 +1,11 @@
 import React from "react";
-import Dashboard from "./Dashboard";
+import Dashboard2 from "./Dashboard2";
 import { NavigationBar } from "../components/NavigationBar";
 
 const App = () => (
   <>
     <NavigationBar />
-    <Dashboard />
+    <Dashboard2 />
   </>
 );
 
