@@ -1,6 +1,20 @@
 import React from "react";
-import { FormLabel, Text, Flex, Box } from "@chakra-ui/react";
+import { FormLabel, Text, Flex, Box, Input } from "@chakra-ui/react";
 import DatePicker from "react-datepicker";
+
+const CustomInput = React.forwardRef((props: any, ref) => (
+  <Input
+    {...props}
+    ref={ref}
+    style={{
+      backgroundColor: "gray.100",
+      color: "gray.100",
+      border: "1",
+      borderRadius: "5px",
+      width: "200px",
+    }}
+  />
+));
 
 export const DateInput = ({
   mode,
@@ -11,6 +25,7 @@ export const DateInput = ({
   endDate,
   setEndDate,
   dateError,
+  backgroundColor,
 }) => {
   return (
     <>
@@ -25,16 +40,22 @@ export const DateInput = ({
         Date
       </FormLabel>
       {mode === "single" && (
-        <DatePicker
-          selected={singleDate}
-          onSelect={(date) => setSingleDate(date)}
-          showTimeSelect
-          dateFormat="Pp"
-        />
+        <>
+          <FormLabel color="gray.600">Single Date</FormLabel>
+          <DatePicker
+            selected={singleDate}
+            onChange={(date) => setSingleDate(date)}
+            showTimeSelect
+            dateFormat="Pp"
+            customInput={<CustomInput />}
+            backgroundColor={backgroundColor}
+            borderRadius="3"
+          />
+        </>
       )}
       {mode === "range" && (
         <>
-          <Flex direction="row">
+          <Flex direction="row" flexWrap="wrap">
             <Box
               mr={{
                 base: "4",
@@ -45,23 +66,25 @@ export const DateInput = ({
               <FormLabel color="gray.600">Start Date</FormLabel>
               <DatePicker
                 selected={startDate}
-                onSelect={(date) => setStartDate(date)}
+                onChange={(date) => setStartDate(date)}
                 showTimeSelect
                 startDate={startDate}
                 endDate={endDate}
                 dateFormat="Pp"
+                customInput={<CustomInput />}
               />
             </Box>
             <Box>
               <FormLabel>End Date</FormLabel>
               <DatePicker
                 selected={endDate}
-                onSelect={(date) => setEndDate(date)}
+                onChange={(date) => setEndDate(date)}
                 showTimeSelect
                 startDate={startDate}
                 endDate={endDate}
                 minDate={startDate}
                 dateFormat="Pp"
+                customInput={<CustomInput />}
               />
             </Box>
           </Flex>

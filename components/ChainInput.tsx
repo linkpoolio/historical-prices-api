@@ -23,6 +23,7 @@ export const ChainInput = ({ chain, setChain, chainError }) => {
       <Select
         placeholder="Select Chain"
         onChange={(e) => setChain(e.target.value)}
+        style={{}}
       >
         {SUPPORTED_CHAINS.map((chain) => (
           <option key={chain} value={chain}>

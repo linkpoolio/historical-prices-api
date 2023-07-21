@@ -3,7 +3,6 @@ import axios from "axios";
 import { Flex, Box } from "@chakra-ui/react";
 import Form from "../components/Form";
 import Response from "../components/Response";
-import BackgroundSVG from "../components/BackgroundSVG";
 
 function Dashboard() {
   const [responseData, setResponseData] = useState(null);
@@ -23,6 +22,7 @@ function Dashboard() {
       let response;
       setIsLoading(true);
       setError(null);
+      setResponseData(null);
 
       if (mode === "single") {
         response = await axios.get("/api/price", {
@@ -56,7 +56,6 @@ function Dashboard() {
 
   return (
     <Box position="relative" backgroundColor="white">
-      <BackgroundSVG />
       <Flex
         width="100%"
         minHeight="90vh"

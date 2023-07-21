@@ -6,6 +6,8 @@ import {
   useColorModeValue,
   Heading,
   Flex,
+  Spacer,
+  Divider,
 } from "@chakra-ui/react";
 import "react-datepicker/dist/react-datepicker.css";
 import {
@@ -126,17 +128,18 @@ function Form({ fetchData, isLoading }) {
       width="100%"
       borderRadius="base"
     >
-      <Heading
-        as="h1"
-        size="md"
-        color="brand.primary"
-        fontSize="lg"
-        mb={{
-          base: "32px",
-          md: "64px",
-        }}
-      >
+      <Heading as="h1" size="md" color="brand.primary" fontSize="lg">
         Request Parameters
+        <Divider
+          mb={{
+            md: "20px",
+            base: "10px",
+          }}
+          mt={{
+            base: "16px",
+            md: "28px",
+          }}
+        />
       </Heading>
       <ContractAddressInput
         contractAddress={contractAddress}
@@ -155,6 +158,7 @@ function Form({ fetchData, isLoading }) {
         endDate={endDate}
         setEndDate={setEndDate}
         dateError={dateError}
+        backgroundColor={backgroundColor}
       />
       <Flex direction="column" marginTop="auto">
         <Button

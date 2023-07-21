@@ -47,6 +47,7 @@ export const ContractAddressInput = ({
         placeholder="Contract Address"
         value={contractAddress}
         onChange={(e) => setContractAddress(e.target.value)}
+        // bg="brand.white"
       />
       <FormErrorMessage>{contractAddressError}</FormErrorMessage>
     </FormControl>

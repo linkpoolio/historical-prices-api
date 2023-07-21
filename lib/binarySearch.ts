@@ -5,8 +5,7 @@ export const binarySearchRoundId = async (
   client,
   contractAddress,
   targetTimestamp,
-  latestRoundId,
-  proximity = PROXIMITY
+  latestRoundId
 ) => {
   const aggregatorContract = {
     address: contractAddress,
@@ -15,6 +14,9 @@ export const binarySearchRoundId = async (
 
   let low = BigInt(0);
   let high = BigInt(Number(latestRoundId));
+
+  let closestRoundId = null;
+  let closestTimestamp = null;
 
   while (low <= high) {
     const mid = low + (high - low) / BigInt(2);
@@ -34,14 +36,18 @@ export const binarySearchRoundId = async (
     if (timestamp) {
       const midTimestamp = BigInt(timestamp);
 
-      // Check if the absolute difference is within the proximity
+      // Store the closest timestamp and round id found so far
       if (
-        Math.abs(Number(midTimestamp) - Number(targetTimestamp)) <= proximity
+        (closestTimestamp === null ||
+          targetTimestamp - midTimestamp <
+            targetTimestamp - closestTimestamp) &&
+        midTimestamp <= targetTimestamp
       ) {
-        return { roundId: mid, timestamp: midTimestamp };
+        closestRoundId = mid;
+        closestTimestamp = midTimestamp;
       }
 
-      if (midTimestamp < targetTimestamp) {
+      if (midTimestamp <= targetTimestamp) {
         low = mid + BigInt(1);
       } else {
         high = mid - BigInt(1);
@@ -51,6 +57,11 @@ export const binarySearchRoundId = async (
     }
   }
 
-  // If the function hasn't returned by this point, no match within the desired proximity was found
-  return { error: "No match found within the desired proximity" };
+  // If a closest timestamp was found, return it
+  if (closestTimestamp !== null) {
+    return { roundId: closestRoundId, timestamp: closestTimestamp };
+  }
+
+  // If the function hasn't returned by this point, no match was found
+  return { error: "No match found" };
 };

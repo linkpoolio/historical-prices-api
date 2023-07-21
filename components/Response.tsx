@@ -7,6 +7,7 @@ import {
   useColorModeValue,
   Flex,
   Code,
+  Divider,
 } from "@chakra-ui/react";
 
 function Response({ responseData, error, isLoading }) {
@@ -63,29 +64,32 @@ function Response({ responseData, error, isLoading }) {
       width="100%"
       borderRadius="base"
     >
-      <Heading
-        as="h1"
-        size="md"
-        color="brand.primary"
-        fontSize="lg"
-        mb={{
-          base: "32px",
-          md: "64px",
-        }}
-      >
+      <Heading as="h1" size="md" color="brand.primary" fontSize="lg">
         Response
+        <Divider
+          mb={{
+            md: "20px",
+            base: "10px",
+          }}
+          mt={{
+            base: "16px",
+            md: "28px",
+          }}
+        />
       </Heading>
-      <Box overflowY="auto" maxHeight="45vh">
-        {responseData && !isLoading ? (
-          <Code whiteSpace="pre-wrap">
-            {JSON.stringify(responseData, null, 2)}
-          </Code>
-        ) : null}
-        {error && (
-          <Code whiteSpace="pre-wrap" color="red.500">
-            {JSON.stringify(error, null, 2)}
-          </Code>
-        )}
+      <Box justifyContent="flex-start">
+        <Box overflowY="auto" maxHeight="50vh">
+          {responseData && !isLoading ? (
+            <Code whiteSpace="pre-wrap" mb="410px">
+              {JSON.stringify(responseData, null, 2)}
+            </Code>
+          ) : null}
+          {error && (
+            <Code whiteSpace="pre-wrap" color="red.500">
+              {JSON.stringify(error, null, 2)}
+            </Code>
+          )}
+        </Box>
       </Box>
 
       {responseData && !isLoading && (
