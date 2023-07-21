@@ -107,10 +107,10 @@ function Form({ fetchData, isLoading }) {
   const color = useColorModeValue("black", "white");
 
   return (
-    <Box
+    <Flex
       flex="1"
       minHeight="70vh"
-      padding={4}
+      padding="32px"
       backgroundColor={backgroundColor}
       color={color}
       display="flex"
@@ -124,8 +124,18 @@ function Form({ fetchData, isLoading }) {
         md: "600px",
       }}
       width="100%"
+      borderRadius="base"
     >
-      <Heading as="h1" size="md" color="brand.primary" fontSize="lg">
+      <Heading
+        as="h1"
+        size="md"
+        color="brand.primary"
+        fontSize="lg"
+        mb={{
+          base: "32px",
+          md: "64px",
+        }}
+      >
         Request Parameters
       </Heading>
       <ContractAddressInput
@@ -157,7 +167,7 @@ function Form({ fetchData, isLoading }) {
           Fetch Data
         </Button>
       </Flex>
-    </Box>
+    </Flex>
   );
 }
 

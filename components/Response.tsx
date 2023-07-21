@@ -51,7 +51,7 @@ function Response({ responseData, error, isLoading }) {
       maxHeight="70vh"
       backgroundColor={backgroundColor}
       color={color}
-      padding={4}
+      padding="32px"
       maxWidth={{
         base: "100%",
         md: "600px",
@@ -61,11 +61,21 @@ function Response({ responseData, error, isLoading }) {
         md: "600px",
       }}
       width="100%"
+      borderRadius="base"
     >
-      <Heading as="h1" size="md" color="brand.primary" fontSize="lg">
+      <Heading
+        as="h1"
+        size="md"
+        color="brand.primary"
+        fontSize="lg"
+        mb={{
+          base: "32px",
+          md: "64px",
+        }}
+      >
         Response
       </Heading>
-      <Box overflowY="auto" maxHeight="60vh">
+      <Box overflowY="auto" maxHeight="45vh">
         {responseData && !isLoading ? (
           <Code whiteSpace="pre-wrap">
             {JSON.stringify(responseData, null, 2)}
