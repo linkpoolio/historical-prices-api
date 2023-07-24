@@ -4,7 +4,7 @@ import { Flex, Box } from "@chakra-ui/react";
 import Form from "../components/Form";
 import Response from "../components/Response";
 
-function Dashboard() {
+function dashboard() {
   const [responseData, setResponseData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -80,4 +80,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default dashboard;

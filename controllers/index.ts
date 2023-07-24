@@ -25,7 +25,7 @@ type Data = {
   description?: string;
   answer: string;
   decimals?: string;
-  timestamp: Date;
+  timestamp: string;
   startedAt?: Date;
   updatedAt?: Date;
 };

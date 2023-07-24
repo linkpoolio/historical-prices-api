@@ -26,6 +26,15 @@ function Form({ fetchData, isLoading }) {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [singleDate, setSingleDate] = useState(new Date());
+  const [singleUnixTime, setSingleUnixTime] = useState(
+    Math.floor(singleDate.getTime() / 1000)
+  );
+  const [startUnixTime, setStartUnixTime] = useState(
+    Math.floor(startDate.getTime() / 1000)
+  );
+  const [endUnixTime, setEndUnixTime] = useState(
+    Math.floor(endDate.getTime() / 1000)
+  );
   const [mode, setMode] = useState("single");
 
   const [contractAddressError, setContractAddressError] = useState("");
@@ -111,7 +120,8 @@ function Form({ fetchData, isLoading }) {
   return (
     <Flex
       flex="1"
-      minHeight="70vh"
+      minHeight="800px"
+      height="100%"
       padding="32px"
       backgroundColor={backgroundColor}
       color={color}
@@ -153,10 +163,16 @@ function Form({ fetchData, isLoading }) {
         mode={mode}
         singleDate={singleDate}
         setSingleDate={setSingleDate}
+        singleUnixTime={singleUnixTime}
+        setSingleUnixTime={setSingleUnixTime}
         startDate={startDate}
         setStartDate={setStartDate}
+        startUnixTime={startUnixTime}
+        setStartUnixTime={setStartUnixTime}
         endDate={endDate}
         setEndDate={setEndDate}
+        endUnixTime={endUnixTime}
+        setEndUnixTime={setEndUnixTime}
         dateError={dateError}
         backgroundColor={backgroundColor}
       />

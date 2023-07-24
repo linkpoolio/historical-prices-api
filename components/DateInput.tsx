@@ -12,6 +12,7 @@ const CustomInput = React.forwardRef((props: any, ref) => (
       border: "1",
       borderRadius: "5px",
       width: "200px",
+      marginBottom: "10px",
     }}
   />
 ));
@@ -26,7 +27,23 @@ export const DateInput = ({
   setEndDate,
   dateError,
   backgroundColor,
+  singleUnixTime,
+  setSingleUnixTime,
+  startUnixTime,
+  setStartUnixTime,
+  endUnixTime,
+  setEndUnixTime,
 }) => {
+  const handleDateChange = (setDate, setUnixTime, date) => {
+    setDate(date);
+    setUnixTime(Math.floor(date.getTime() / 1000));
+  };
+
+  const handleUnixChange = (setDate, setUnixTime, unixTime) => {
+    setDate(new Date(unixTime * 1000));
+    setUnixTime(unixTime);
+  };
+
   return (
     <>
       <FormLabel
@@ -44,12 +61,27 @@ export const DateInput = ({
           <FormLabel color="gray.600">Single Date</FormLabel>
           <DatePicker
             selected={singleDate}
-            onChange={(date) => setSingleDate(date)}
+            onChange={(date) =>
+              handleDateChange(setSingleDate, setSingleUnixTime, date)
+            }
             showTimeSelect
-            dateFormat="Pp"
+            dateFormat="MMMM d, yyyy HH:mm"
+            timeFormat="HH:mm"
             customInput={<CustomInput />}
             backgroundColor={backgroundColor}
             borderRadius="3"
+          />
+          <FormLabel color="gray.600">Unix Timestamp</FormLabel>
+          <Input
+            value={singleUnixTime}
+            onChange={(e) =>
+              handleUnixChange(setSingleDate, setSingleUnixTime, e.target.value)
+            }
+            width="200px"
+            mb={{
+              base: "10px",
+              md: "10px",
+            }}
           />
         </>
       )}
@@ -66,25 +98,59 @@ export const DateInput = ({
               <FormLabel color="gray.600">Start Date</FormLabel>
               <DatePicker
                 selected={startDate}
-                onChange={(date) => setStartDate(date)}
+                onChange={(date) =>
+                  handleDateChange(setStartDate, setStartUnixTime, date)
+                }
                 showTimeSelect
                 startDate={startDate}
                 endDate={endDate}
-                dateFormat="Pp"
+                dateFormat="MMMM d, yyyy HH:mm"
+                timeFormat="HH:mm"
                 customInput={<CustomInput />}
+              />
+              <FormLabel color="gray.600">Start Unix Timestamp</FormLabel>
+              <Input
+                value={startUnixTime}
+                onChange={(e) =>
+                  handleUnixChange(
+                    setStartDate,
+                    setStartUnixTime,
+                    e.target.value
+                  )
+                }
+                width="200px"
+                mb={{
+                  base: "10px",
+                  md: "10px",
+                }}
               />
             </Box>
             <Box>
               <FormLabel>End Date</FormLabel>
               <DatePicker
                 selected={endDate}
-                onChange={(date) => setEndDate(date)}
+                onChange={(date) =>
+                  handleDateChange(setEndDate, setEndUnixTime, date)
+                }
                 showTimeSelect
                 startDate={startDate}
                 endDate={endDate}
                 minDate={startDate}
-                dateFormat="Pp"
+                dateFormat="MMMM d, yyyy HH:mm"
+                timeFormat="HH:mm"
                 customInput={<CustomInput />}
+              />
+              <FormLabel>End Unix Timestamp</FormLabel>
+              <Input
+                value={endUnixTime}
+                onChange={(e) =>
+                  handleUnixChange(setEndDate, setEndUnixTime, e.target.value)
+                }
+                width="200px"
+                mb={{
+                  base: "10px",
+                  md: "10px",
+                }}
               />
             </Box>
           </Flex>

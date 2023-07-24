@@ -17,6 +17,8 @@ function Response({ responseData, error, isLoading }) {
       return;
     }
 
+    const description = responseData.description;
+
     let csvData = responseData.rounds.map((round) => {
       return Object.keys(round)
         .map((key) => {
@@ -34,7 +36,7 @@ function Response({ responseData, error, isLoading }) {
     const link = document.createElement("a");
     link.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csvString);
     link.target = "_blank";
-    link.download = "data.csv";
+    link.download = `${description}.csv`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -48,8 +50,7 @@ function Response({ responseData, error, isLoading }) {
       direction="column"
       justify="space-between"
       flex="1"
-      minHeight="70vh"
-      maxHeight="70vh"
+      minHeight="800px"
       backgroundColor={backgroundColor}
       color={color}
       padding="32px"
@@ -78,25 +79,37 @@ function Response({ responseData, error, isLoading }) {
         />
       </Heading>
       <Box justifyContent="flex-start">
-        <Box overflowY="auto" maxHeight="50vh">
+        <Box
+          overflowY="auto"
+          height="550px"
+          bgColor="white"
+          borderRadius="base"
+          borderColor="brand.gray_20"
+        >
           {responseData && !isLoading ? (
-            <Code whiteSpace="pre-wrap" mb="410px">
+            <Code whiteSpace="pre-wrap" mb="410px" bgColor="white">
               {JSON.stringify(responseData, null, 2)}
             </Code>
           ) : null}
           {error && (
-            <Code whiteSpace="pre-wrap" color="red.500">
+            <Code
+              whiteSpace="pre-wrap"
+              mb="410px"
+              color="red.500"
+              bgColor="white"
+            >
               {JSON.stringify(error, null, 2)}
             </Code>
           )}
         </Box>
       </Box>
-
-      {responseData && !isLoading && (
-        <Button variant="default" onClick={downloadCSV}>
-          Export to CSV
-        </Button>
-      )}
+      <Button
+        variant="default"
+        onClick={downloadCSV}
+        isDisabled={!responseData || isLoading}
+      >
+        Export to CSV
+      </Button>
     </Flex>
   );
 }

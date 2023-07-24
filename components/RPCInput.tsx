@@ -6,8 +6,11 @@ import {
   FormErrorMessage,
   Flex,
   Link,
+  Tooltip,
+  Icon,
 } from "@chakra-ui/react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { InfoOutlineIcon } from "@chakra-ui/icons";
 
 export const RPCInput = ({ rpc, setRPC, rpcError }) => {
   return (

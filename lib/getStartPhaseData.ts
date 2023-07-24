@@ -5,7 +5,12 @@ export async function getStartPhaseData(
   startTimestampBigInt,
   publicClient
 ) {
-  for (const phaseAggregatorContract of phaseAggregatorContracts) {
+  // Sort the phaseAggregatorContracts in decreasing order of phaseId
+  const sortedContracts = [...phaseAggregatorContracts].sort((a, b) => {
+    return Number(BigInt(b.phaseId) - BigInt(a.phaseId));
+  });
+
+  for (const phaseAggregatorContract of sortedContracts) {
     if (!phaseAggregatorContract.latestRoundId) {
       continue;
     }

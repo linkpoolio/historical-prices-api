@@ -24,3 +24,5 @@ export const STATUS_CODE = {
 };
 
 export const PROXIMITY = 86400; // 1 day
+
+export const MINIMUM_PROXIMITY = 60; // 1 minute
