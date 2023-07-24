@@ -18,17 +18,21 @@ import {
 import { STATUS_CODE } from "./constants";
 
 function createChainConfig(chain, rpcUrl) {
-  return {
-    ...chain,
-    rpcUrls: {
-      public: {
-        http: [rpcUrl],
+  if (rpcUrl) {
+    return {
+      ...chain,
+      rpcUrls: {
+        public: {
+          http: [rpcUrl],
+        },
+        default: {
+          http: [rpcUrl],
+        },
       },
-      default: {
-        http: [rpcUrl],
-      },
-    },
-  };
+    };
+  } else {
+    return chain;
+  }
 }
 
 export function getClient(chainName, rpcUrl) {

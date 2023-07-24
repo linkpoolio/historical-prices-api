@@ -110,7 +110,6 @@ function Form({ fetchData, isLoading }) {
   const isFormFilled =
     contractAddress.trim() !== "" &&
     chain.trim() !== "" &&
-    rpc.trim() !== "" &&
     ((mode === "single" && singleDate) ||
       (mode === "range" && startDate && endDate));
 

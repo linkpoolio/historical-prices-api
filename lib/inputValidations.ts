@@ -17,7 +17,7 @@ export function validateContractAddress(contractAddress) {
 }
 
 export function validateRPCUrl(rpcUrl) {
-  if (!rpcUrl || typeof rpcUrl !== "string") {
+  if (typeof rpcUrl !== "string") {
     return {
       status: STATUS_CODE.BAD_REQUEST,
       error: {

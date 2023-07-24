@@ -8,13 +8,7 @@ export default async function handler(
 ) {
   const { contractAddress, startTimestamp, endTimestamp, chain, rpcUrl } =
     req.query;
-  if (
-    !contractAddress ||
-    !startTimestamp ||
-    !endTimestamp ||
-    !chain ||
-    !rpcUrl
-  ) {
+  if (!contractAddress || !startTimestamp || !endTimestamp || !chain) {
     return res.status(400).json({ error: "All fields are required." });
   }
   try {

@@ -5,11 +5,9 @@ import {
   FormControl,
   FormErrorMessage,
   Flex,
-  Link,
   Tooltip,
   Icon,
 } from "@chakra-ui/react";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
 
 export const RPCInput = ({ rpc, setRPC, rpcError }) => {
@@ -23,18 +21,17 @@ export const RPCInput = ({ rpc, setRPC, rpcError }) => {
             lg: "2",
           }}
         >
-          RPC URL
+          RPC URL (optional)
+          <Tooltip
+            label="More information about RPC URL"
+            fontSize="md"
+            placement="right-start"
+          >
+            <span>
+              <Icon as={InfoOutlineIcon} boxSize={3} ml={2} mb="1px" />
+            </span>
+          </Tooltip>
         </FormLabel>{" "}
-        <Link href={"https://chainlist.org/"} m="0" isExternal color="blue.500">
-          <ExternalLinkIcon
-            mx="1px"
-            mb={{
-              base: "2",
-              md: "2",
-              lg: "2",
-            }}
-          />
-        </Link>
       </Flex>
       <Input
         placeholder="https://example.com"
