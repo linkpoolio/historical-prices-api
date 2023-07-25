@@ -23,7 +23,7 @@ export const RPCInput = ({ rpc, setRPC, rpcError }) => {
         >
           RPC URL (optional)
           <Tooltip
-            label="More information about RPC URL"
+            label="A custom RPC URL to use for fetching data. If left blank, the default RPC URL for the selected chain will be used."
             fontSize="md"
             placement="right-start"
           >

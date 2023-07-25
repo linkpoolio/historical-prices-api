@@ -43,26 +43,16 @@ export const DateInput = ({
   endUnixTime,
   setEndUnixTime,
 }) => {
-  const utcDateFormat = (date) => {
-    const day = `0${date.getUTCDate()}`.slice(-2);
-    const month = `0${date.getUTCMonth() + 1}`.slice(-2);
-    const year = date.getUTCFullYear();
-    const hours = `0${date.getUTCHours()}`.slice(-2);
-    const minutes = `0${date.getUTCMinutes()}`.slice(-2);
-    const seconds = `0${date.getUTCSeconds()}`.slice(-2);
-    return `${month}/${day}/${year} ${hours}:${minutes}:${seconds}`;
-  };
-
   const handleDateChange = (setDate, setUnixTime, date) => {
-    const utcDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
-    setDate(utcDate);
-    setUnixTime(Math.floor(utcDate.getTime() / 1000));
+    setDate(date);
+    setUnixTime(Math.floor(date.getTime() / 1000));
   };
 
   const handleUnixChange = (setDate, setUnixTime, unixTime) => {
-    const date = new Date(unixTime * 1000);
-    const utcDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
-    setDate(utcDate);
+    if (isNaN(unixTime) || unixTime === "" || unixTime.length > 10) {
+      return;
+    }
+    setDate(new Date(unixTime * 1000));
     setUnixTime(unixTime);
   };
 
@@ -78,7 +68,7 @@ export const DateInput = ({
       >
         Date
         <Tooltip
-          label="The date and time in UTC to query the price for."
+          label="The date and time in your local timezone. The response timestamps will be in UTC. The date and time will be converted to a Unix timestamp and sent to the API"
           fontSize="md"
           placement="right-start"
         >
@@ -87,6 +77,7 @@ export const DateInput = ({
           </span>
         </Tooltip>
       </FormLabel>
+
       {mode === "single" && (
         <>
           <FormLabel color="gray.600">Single Date</FormLabel>
@@ -96,12 +87,11 @@ export const DateInput = ({
               handleDateChange(setSingleDate, setSingleUnixTime, date)
             }
             showTimeSelect
-            dateFormat={utcDateFormat(singleDate)}
+            dateFormat="Pp"
             timeFormat="HH:mm"
             customInput={<CustomInput />}
             backgroundColor={backgroundColor}
             borderRadius="3"
-            utcOffset={0}
           />
           <FormLabel color="gray.600">Unix Timestamp</FormLabel>
           <Input
@@ -136,10 +126,9 @@ export const DateInput = ({
                 showTimeSelect
                 startDate={startDate}
                 endDate={endDate}
-                dateFormat={utcDateFormat(singleDate)}
+                dateFormat="Pp"
                 timeFormat="HH:mm"
                 customInput={<CustomInput />}
-                utcOffset={0}
               />
               <FormLabel color="gray.600">Start Unix Timestamp</FormLabel>
               <Input
@@ -169,10 +158,9 @@ export const DateInput = ({
                 startDate={startDate}
                 endDate={endDate}
                 minDate={startDate}
-                dateFormat={utcDateFormat(singleDate)}
+                dateFormat="Pp"
                 timeFormat="HH:mm"
                 customInput={<CustomInput />}
-                utcOffset={0}
               />
               <FormLabel>End Unix Timestamp</FormLabel>
               <Input

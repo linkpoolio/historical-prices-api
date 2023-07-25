@@ -1,12 +1,9 @@
-// Form.js
 import React, { useState } from "react";
 import {
-  Box,
   Button,
   useColorModeValue,
   Heading,
   Flex,
-  Spacer,
   Divider,
 } from "@chakra-ui/react";
 import "react-datepicker/dist/react-datepicker.css";
@@ -21,6 +18,7 @@ import { DateInput } from "./DateInput";
 import { RPCInput } from "./RPCInput";
 
 function Form({ fetchData, isLoading }) {
+
   const [contractAddress, setContractAddress] = useState("");
   const [chain, setChain] = useState("");
   const [startDate, setStartDate] = useState(new Date());
