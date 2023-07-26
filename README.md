@@ -73,7 +73,7 @@ Replace `3000` with the port number if you have a different one in your setup.
 | ✅       | startTimestamp  | The start timestamp of the period for fetching prices. | `number` | Unix timestamp in seconds. Example: `1681187628`                                                                                                             |
 | ✅       | endTimestamp    | The end timestamp of the period for fetching prices.   | `number` | Unix timestamp in seconds. Example: `1681187628`                                                                                                             |
 | ✅       | chain           | The blockchain network where the contract is deployed. | `string` | `mainnet`, `goerli`, `arbitrum`, `bsc`, `polygon` , `avalanche`, `fantom`, `moonbeam`, `moonriver`, `harmonyOne`, `optimism`, `metis`, `baseGoerli`,`gnosis` |
-| ✅       | rpcUrl          | The RPC URL for the blockchain network.                | `string` | [RPC URLs](https://chainlist.org/)                                                                                                                           |
+|          | rpcUrl          | The RPC URL for the blockchain network.                | `string` | [RPC URLs](https://chainlist.org/)                                                                                                                           |
 
 ## Response
 
@@ -104,7 +104,7 @@ In order to fetch the price for a single round, you need to specify the same sta
 Request:
 
 ```bash
-GET /api/price?contractAddress=0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419&startTimestamp=1614556800&endTimestamp=1614556800&chain=mainnet
+GET /api/price?contractAddress=0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419&startTimestamp=1614556800&endTimestamp=1614556800&chain=mainnet&rpcUrl=https://eth-mainnet.alchemyapi.io/v2/your-api-key
 ```
 
 Response:
@@ -137,7 +137,7 @@ In order to fetch the prices for multiple rounds, you need to specify different 
 Request:
 
 ```bash
-GET /api/price?contractAddress=0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419&startTimestamp=1614556800&endTimestamp=1614643200&chain=mainnet
+GET /api/price?contractAddress=0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419&startTimestamp=1614556800&endTimestamp=1614643200&chain=mainnet&rpcUrl=https://eth-mainnet.alchemyapi.io/v2/your-api-key
 ```
 
 Response:
