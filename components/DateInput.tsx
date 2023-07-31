@@ -77,9 +77,9 @@ export const DateInput = ({
           lg: "2",
         }}
       >
-        Date
+        Date in UTC
         <Tooltip
-          label="The date and time in your local timezone. The response timestamps will be in UTC. The date and time will be converted to a Unix timestamp and sent to the API"
+          label="The date and time in UTC. The response timestamps will also be in UTC."
           fontSize="md"
           placement="right-start"
         >
