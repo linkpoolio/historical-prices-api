@@ -25,6 +25,7 @@ type Data = {
   description?: string;
   answer: string;
   decimals?: string;
+  date: string;
   timestamp: string;
   startedAt?: Date;
   updatedAt?: Date;
@@ -189,7 +190,8 @@ export const getRoundsByTimestamp = async (
         phaseId: phaseId.toString(),
         roundId: roundId.toString(),
         answer: result[1].toString(),
-        timestamp: formatDate(result[3].toString()),
+        timestamp: result[3].toString(),
+        date: formatDate(result[3].toString()),
       };
       logger.info("Completed fetching round data successfully");
       return {
@@ -239,17 +241,18 @@ export const getRoundsByTimestamp = async (
           phaseId: currentPhaseId.toString(),
           roundId: currentRoundId.toString(),
           answer: currentRoundData.answer.toString(),
-          timestamp: formatDate(currentRoundData.timestamp.toString()),
+          timestamp: currentRoundData.timestamp.toString(),
+          date: formatDate(currentRoundData.timestamp.toString()),
         };
+
+        if (currentRoundData.timestamp >= validatedEndTimestamp) {
+          break; // We reached the end timestamp
+        }
 
         roundsData.push(formattedRoundData);
 
         if (currentRoundData.roundId == phaseAggregatorContract.latestRoundId) {
           break; // We reached the latest round for this phase
-        }
-
-        if (currentRoundData.timestamp >= validatedEndTimestamp) {
-          break; // We reached the end timestamp
         }
 
         currentRoundId++; // Proceed to next round in the same phase

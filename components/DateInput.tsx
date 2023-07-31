@@ -10,6 +10,7 @@ import {
 } from "@chakra-ui/react";
 import DatePicker from "react-datepicker";
 import { InfoOutlineIcon } from "@chakra-ui/icons";
+import moment from "moment-timezone";
 
 const CustomInput = React.forwardRef((props: any, ref) => (
   <Input
@@ -43,9 +44,19 @@ export const DateInput = ({
   endUnixTime,
   setEndUnixTime,
 }) => {
+  const localTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const apiTZ = "UTC";
+
   const handleDateChange = (setDate, setUnixTime, date) => {
-    setDate(date);
-    setUnixTime(Math.floor(date.getTime() / 1000));
+    const apiTimeFromPickerLocalDate = moment(date)
+      .tz(localTZ)
+      .tz(apiTZ, true)
+      .format();
+
+    setDate(new Date(apiTimeFromPickerLocalDate));
+    setUnixTime(
+      Math.floor(new Date(apiTimeFromPickerLocalDate).getTime() / 1000)
+    );
   };
 
   const handleUnixChange = (setDate, setUnixTime, unixTime) => {
@@ -82,7 +93,7 @@ export const DateInput = ({
         <>
           <FormLabel color="gray.600">Single Date</FormLabel>
           <DatePicker
-            selected={singleDate}
+            selected={moment(singleDate).tz(apiTZ).tz(localTZ, true).toDate()}
             onChange={(date) =>
               handleDateChange(setSingleDate, setSingleUnixTime, date)
             }
@@ -119,16 +130,22 @@ export const DateInput = ({
             >
               <FormLabel color="gray.600">Start Date</FormLabel>
               <DatePicker
-                selected={startDate}
+                selected={moment(startDate)
+                  .tz(apiTZ)
+                  .tz(localTZ, true)
+                  .toDate()}
                 onChange={(date) =>
                   handleDateChange(setStartDate, setStartUnixTime, date)
                 }
-                showTimeSelect
+                selectsStart
                 startDate={startDate}
                 endDate={endDate}
+                showTimeSelect
                 dateFormat="Pp"
                 timeFormat="HH:mm"
                 customInput={<CustomInput />}
+                backgroundColor={backgroundColor}
+                borderRadius="3"
               />
               <FormLabel color="gray.600">Start Unix Timestamp</FormLabel>
               <Input
@@ -150,17 +167,20 @@ export const DateInput = ({
             <Box>
               <FormLabel>End Date</FormLabel>
               <DatePicker
-                selected={endDate}
+                selected={moment(endDate).tz(apiTZ).tz(localTZ, true).toDate()}
                 onChange={(date) =>
                   handleDateChange(setEndDate, setEndUnixTime, date)
                 }
-                showTimeSelect
+                selectsEnd
                 startDate={startDate}
                 endDate={endDate}
                 minDate={startDate}
+                showTimeSelect
                 dateFormat="Pp"
                 timeFormat="HH:mm"
                 customInput={<CustomInput />}
+                backgroundColor={backgroundColor}
+                borderRadius="3"
               />
               <FormLabel>End Unix Timestamp</FormLabel>
               <Input
