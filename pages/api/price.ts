@@ -17,7 +17,7 @@ export default async function handler(
       startTimestamp as string,
       endTimestamp as string,
       chain as string,
-      rpcUrl as string
+      rpcUrl ? (rpcUrl as string) : null
     );
     if (result.error) {
       logger.error(`${result.error.message}`);

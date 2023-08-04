@@ -16,20 +16,6 @@ export function validateContractAddress(contractAddress) {
   return { validatedContractAddress: contractAddress };
 }
 
-export function validateRPCUrl(rpcUrl) {
-  if (typeof rpcUrl !== "string") {
-    return {
-      status: STATUS_CODE.BAD_REQUEST,
-      error: {
-        errorCode: "MISSING_RPC_URL",
-        message: `Missing or invalid RPC URL.`,
-      },
-    };
-  }
-
-  return { validatedRPCUrl: rpcUrl };
-}
-
 export function validateChain(chain) {
   if (!chain || !SUPPORTED_CHAINS.includes(chain)) {
     return {
@@ -122,11 +108,6 @@ export const validateInput = (
   }
 
   const { validatedStartTimestamp, validatedEndTimestamp } = validationResult;
-
-  validationResult = validateRPCUrl(rpcUrl);
-  if (validationResult.error) {
-    return { status: validationResult.status, error: validationResult.error };
-  }
 
   const validatedRPCUrl = validationResult.validatedRPCUrl;
 

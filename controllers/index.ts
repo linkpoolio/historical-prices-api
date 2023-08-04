@@ -5,7 +5,6 @@ import {
   validateContractAddress,
   validateChain,
   validateTimestamps,
-  validateRPCUrl,
   STATUS_CODE,
   binarySearchRoundId,
   getStartPhaseData,
@@ -62,13 +61,7 @@ export const getRoundsByTimestamp = async (
     validatedStartTimestamp,
     validatedEndTimestamp,
     validatedRPCUrl,
-  } = validateInputs(
-    contractAddress,
-    chain,
-    startTimestamp,
-    endTimestamp,
-    rpcUrl
-  );
+  } = validateInputs(contractAddress, chain, startTimestamp, endTimestamp);
 
   if (error) {
     return errorResponse(
@@ -295,8 +288,7 @@ const validateInputs = (
   contractAddress: string,
   chain: string,
   startTimestamp: string,
-  endTimestamp: string,
-  rpcUrl: string
+  endTimestamp: string
 ): ValidationResult => {
   const validationResultContract = validateContractAddress(contractAddress);
   if (validationResultContract.error) {
@@ -316,16 +308,10 @@ const validateInputs = (
     return validationResultTimestamps;
   }
 
-  const validationRPCUrl = validateRPCUrl(rpcUrl);
-  if (validationRPCUrl.error) {
-    return validationRPCUrl;
-  }
-
   return {
     ...validationResultContract,
     ...validationResultChain,
     ...validationResultTimestamps,
-    ...validationRPCUrl,
   };
 };
 
