@@ -34,6 +34,7 @@ function dashboard() {
             rpcUrl,
           },
         });
+        console.log(response);
       } else {
         response = await axios.get("/api/price", {
           params: {
@@ -44,6 +45,7 @@ function dashboard() {
             rpcUrl,
           },
         });
+        console.log(response);
       }
 
       setResponseData(response.data);

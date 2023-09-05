@@ -1,5 +1,4 @@
 import AccessControlledOffchainAggregator from "../abi/EACAggregatorProxy.json";
-import { PROXIMITY, MINIMUM_PROXIMITY } from "./constants";
 
 export const binarySearchRoundId = async (
   client,

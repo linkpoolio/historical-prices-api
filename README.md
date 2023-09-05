@@ -23,30 +23,16 @@ git clone https://github.com/linkpoolio/historical-prices-api.git
 yarn install
 ```
 
-### 3. Start the server:
+### 3. Build the project:
+
+```bash
+yarn build
+```
+
+### 4. Start the server:
 
 ```bash
 yarn start
-```
-
-### 4. Setup the environment variables:
-
-Copy the `.env.template` and create a `.env.local` file in the root directory of the project and configure the RPC URLs for the blockchain networks you want to use:
-
-```bash
-# Ethereum
-ETHEREUM_MAINNET_RPC_URL=
-
-# Goerli
-GOERLI_RPC_URL=
-
-# Arbitrum
-ARBITRUM_MAINNET_RPC_URL=
-
-# Binance Smart Chain
-BSC_MAINNET_RPC_URL=
-
-...
 ```
 
 ### 5. Access UI App:

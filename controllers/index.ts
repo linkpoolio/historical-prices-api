@@ -153,14 +153,13 @@ export const getRoundsByTimestamp = async (
     );
 
     if (!startPhaseData) {
-      logger.error(
+      logger.info(
         `Failed to get phase data from contract ${validatedContractAddress}`
       );
       return {
-        status: STATUS_CODE.INTERNAL_ERROR,
         error: {
           errorCode: "FAILED_TO_FETCH_PHASE_DATA",
-          message: `Failed to get phase data from contract ${validatedContractAddress}.`,
+          message: `Failed to get phase data from contract ${validatedContractAddress}. This requested time is before the first price feed transsmission for this feed.`,
         },
       };
     }
@@ -271,14 +270,13 @@ export const getRoundsByTimestamp = async (
       rounds: roundsData,
     };
   } catch (error) {
-    logger.error(
+    logger.info(
       `Failed to get phase data from contract ${validatedContractAddress}: ${error.message}`
     );
     return {
-      status: STATUS_CODE.INTERNAL_ERROR,
       error: {
         errorCode: "FAILED_TO_FETCH_PHASE_DATA",
-        message: `Failed to get phase data from contract ${validatedContractAddress}: ${error.message}.`,
+        message: `Failed to get phase data from contract ${validatedContractAddress}: ${error.message}. The contract does not exist or the requested time is before the first price feed transmission for this feed.`,
       },
     };
   }
