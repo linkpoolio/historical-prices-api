@@ -24,7 +24,6 @@ export default async function handler(
     );
     if (result.status === STATUS_CODE.INTERNAL_ERROR) {
       logger.error(`${result.error.message}`);
-      console.log("HEY");
       return res.status(result.status).json({ error: result.error });
     }
     return res.status(STATUS_CODE.OK).json(result);

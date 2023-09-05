@@ -13,7 +13,6 @@ import {
 function Response({ responseData, error, isLoading }) {
   const downloadCSV = () => {
     if (!responseData.rounds || responseData.rounds.length === 0) {
-      console.log("No data to download");
       return;
     }
 
